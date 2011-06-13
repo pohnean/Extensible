@@ -12,6 +12,8 @@ Ext.ensible.cal.EventStore = Ext.extend(Ext.data.Store, {
         //this._dateCache = [];
         
         Ext.ensible.cal.EventStore.superclass.constructor.apply(this, arguments);
+        
+        this.on('beforesave', this.onBeforeSave, this);
     },
     
     load : function(o){
@@ -33,8 +35,13 @@ Ext.ensible.cal.EventStore = Ext.extend(Ext.data.Store, {
         }
         
         Ext.ensible.cal.EventStore.superclass.load.call(this, o);
-    }
+    },
     
+    // private
+    onBeforeSave : function(store, data) {
+        Ext.ensible.log('store onbeforesave');
+    }
+        
 //    execute : function(action, rs, options, /* private */ batch) {
 //        if(action=='read'){
 //            var i = 0, 

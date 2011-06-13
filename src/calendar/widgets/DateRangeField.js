@@ -103,6 +103,14 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
                 hidden: this.showTimes === false || this.showAllDay === false,
                 boxLabel: this.allDayText,
                 handler: function(chk, checked){
+                    if (checked) {
+                        console.log(this.startDate.getValue());
+                        console.log(this.startDate.getValue().add(Date.HOUR, 1));
+//                        this.endTime.setValue();
+                    } else {
+                        
+                    }
+                    
                     this.startTime.setVisible(!checked);
                     this.endTime.setVisible(!checked);
                 },

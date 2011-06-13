@@ -228,6 +228,8 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             fs = rec.fields,
             dirty = false;
             
+            console.log(dates);
+            
         rec.beginEdit();
         
         //TODO: This block is copied directly from BasicForm.updateRecord.
