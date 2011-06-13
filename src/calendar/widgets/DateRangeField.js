@@ -103,12 +103,25 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
                 hidden: this.showTimes === false || this.showAllDay === false,
                 boxLabel: this.allDayText,
                 handler: function(chk, checked){
+                    var newStartDate, newEndDate, newStartTime, newEndTime;
                     if (checked) {
-                        console.log(this.startDate.getValue());
-                        console.log(this.startDate.getValue().add(Date.HOUR, 1));
-//                        this.endTime.setValue();
+                    //                        newStartDate = this.getDT('start');
+                    //                        newEndDate = this.getDT('end');
+                    //                        
+                    //                        newStartDate.clearTime();
+                    //                        this.setDT(newStartDate, 'start');
+                    //                        
+                    //                        newEndDate.clearTime();
+                    //                        newEndDate.add(Date.DAYS, 1);
+                    //                        this.setDT(newEndDate, 'end');
                     } else {
-                        
+                    //                        newStartDate = this.getDT('start');
+                    //                        newEndDate = this.getDT('end');
+                    //                        newEndDate.setHours(newStartDate.getHours() + 1);
+                    //                        newEndDate.setMinutes(newStartDate.getMinutes());
+                    //                        newEndDate.setSeconds(newStartDate.getSeconds());
+                    //                        
+                    //                        this.setDT(newEndDate, 'end');
                     }
                     
                     this.startTime.setVisible(!checked);
@@ -135,7 +148,9 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
             }
             
             this.fieldCt = new Ext.Container({
-                autoEl: {id:this.id}, //make sure the container el has the field's id
+                autoEl: {
+                    id:this.id
+                }, //make sure the container el has the field's id
                 cls: 'ext-dt-range',
                 renderTo: ct,
                 layout: 'table',
@@ -146,12 +161,12 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
                     hideParent: true
                 },
                 items:[
-                    this.startDate,
-                    this.startTime,
-                    this.toLabel,
-                    singleLine ? this.endTime : this.endDate,
-                    singleLine ? this.endDate : this.endTime,
-                    this.allDay
+                this.startDate,
+                this.startTime,
+                this.toLabel,
+                singleLine ? this.endTime : this.endDate,
+                singleLine ? this.endDate : this.endTime,
+                this.allDay
                 ]
             });
             
@@ -173,13 +188,13 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
         this.checkDates(type, startend);
         this.fireEvent('change', this, this.getValue());
     },
-        
+            
     // private
     checkDates: function(type, startend){
         var startField = Ext.getCmp(this.id+'-start-'+type),
-            endField = Ext.getCmp(this.id+'-end-'+type),
-            startValue = this.getDT('start'),
-            endValue = this.getDT('end');
+        endField = Ext.getCmp(this.id+'-end-'+type),
+        startValue = this.getDT('start'),
+        endValue = this.getDT('end');
 
         if(startValue > endValue){
             if(startend=='start'){
@@ -204,26 +219,28 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
      */
     getValue: function(){
         return [
-            this.getDT('start'), 
-            this.getDT('end'),
-            this.allDay.getValue()
+        this.getDT('start'), 
+        this.getDT('end'),
+        this.allDay.getValue()
         ];
     },
     
     // private getValue helper
     getDT: function(startend){
         var time = this[startend+'Time'].getValue(),
-            dt = this[startend+'Date'].getValue();
+        dt = this[startend+'Date'].getValue();
             
-        if(Ext.isDate(dt)){
-            dt = dt.format(this[startend+'Date'].format);
+        if(Ext.isDate(dt)){            
+            dt = dt.format(this[startend+'Date'].format);            
         }
         else{
             return null;
         };
         if(time != ''){
             return Date.parseDate(dt+' '+time, this[startend+'Date'].format+' '+this[startend+'Time'].format);
-        }
+        }       
+        
+        
         return Date.parseDate(dt, this[startend+'Date'].format);
         
     },
