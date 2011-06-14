@@ -122,6 +122,9 @@
         },{
             "text": "CalendarPanel.js",
             "path": "src/calendar/"
+        },{
+            "text": "RecurringEvent.js",
+            "path": "src/calendar/"
         }]
     },{
        "name": "Extensible All CSS",

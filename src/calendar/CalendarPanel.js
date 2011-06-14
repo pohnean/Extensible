@@ -10,6 +10,12 @@
  */
 Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
     /**
+     * @cfg {Boolean} autoTitle
+     * True to automatically set the panel title as the current month, or date range, depending on the 
+     * CalendarView selected.
+     */
+    autoTitle: false,
+    /**
      * @cfg {Number} activeItem
      * The 0-based index within the available views to set as the default active view (defaults to undefined). If not 
      * specified the default view will be set as the last one added to the panel. You can retrieve a reference to the
@@ -217,61 +223,109 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
             items: []
         };
         
+        if (this.autoTitle === true) {
+            this.header = true;
+        }
+        
         this.viewCount = 0;
         
         var multiDayViewCount = (this.multiDayViewCfg && this.multiDayViewCfg.dayCount) || 3,
-            multiWeekViewCount = (this.multiWeekViewCfg && this.multiWeekViewCfg.weekCount) || 2;
+        multiWeekViewCount = (this.multiWeekViewCfg && this.multiWeekViewCfg.weekCount) || 2;
         
         if(this.showNavToday){
             this.tbar.items.push({
-                id: this.id+'-tb-today', text: this.todayText, handler: this.onTodayClick, scope: this
+                id: this.id+'-tb-today', 
+                text: this.todayText, 
+                handler: this.onTodayClick, 
+                scope: this
             });
         }
         if(this.showNavNextPrev){
             this.tbar.items.push([
-                {id: this.id+'-tb-prev', handler: this.onPrevClick, scope: this, iconCls: 'x-tbar-page-prev'},
-                {id: this.id+'-tb-next', handler: this.onNextClick, scope: this, iconCls: 'x-tbar-page-next'}
+            {
+                id: this.id+'-tb-prev', 
+                handler: this.onPrevClick, 
+                scope: this, 
+                iconCls: 'x-tbar-page-prev'
+            },
+
+            {
+                id: this.id+'-tb-next', 
+                handler: this.onNextClick, 
+                scope: this, 
+                iconCls: 'x-tbar-page-next'
+            }
             ]);
         }
         if(this.showNavJump){
             this.tbar.items.push([
                 this.jumpToText,
-                {id: this.id+'-tb-jump-dt', xtype: 'datefield', showToday: false},
-                {id: this.id+'-tb-jump', text: this.goText, handler: this.onJumpClick, scope: this}
-            ]);
+                {
+                    id: this.id+'-tb-jump-dt', 
+                    xtype: 'datefield', 
+                    showToday: false
+                },
+
+                {
+                    id: this.id+'-tb-jump', 
+                    text: this.goText, 
+                    handler: this.onJumpClick, 
+                    scope: this
+                }
+                ]);
         }
         
         this.tbar.items.push('->');
         
         if(this.showDayView){
             this.tbar.items.push({
-                id: this.id+'-tb-day', text: this.dayText, handler: this.onDayNavClick, scope: this, toggleGroup: this.id+'-tb-views'
+                id: this.id+'-tb-day', 
+                text: this.dayText, 
+                handler: this.onDayNavClick, 
+                scope: this, 
+                toggleGroup: this.id+'-tb-views'
             });
             this.viewCount++;
         }
         if(this.showMultiDayView){
             var text = String.format(this.getMultiDayText(multiDayViewCount), multiDayViewCount);
             this.tbar.items.push({
-                id: this.id+'-tb-multiday', text: text, handler: this.onMultiDayNavClick, scope: this, toggleGroup: this.id+'-tb-views'
+                id: this.id+'-tb-multiday', 
+                text: text, 
+                handler: this.onMultiDayNavClick, 
+                scope: this, 
+                toggleGroup: this.id+'-tb-views'
             });
             this.viewCount++;
         }
         if(this.showWeekView){
             this.tbar.items.push({
-                id: this.id+'-tb-week', text: this.weekText, handler: this.onWeekNavClick, scope: this, toggleGroup: this.id+'-tb-views'
+                id: this.id+'-tb-week', 
+                text: this.weekText, 
+                handler: this.onWeekNavClick, 
+                scope: this, 
+                toggleGroup: this.id+'-tb-views'
             });
             this.viewCount++;
         }
         if(this.showMultiWeekView){
             var text = String.format(this.getMultiWeekText(multiWeekViewCount), multiWeekViewCount);
             this.tbar.items.push({
-                id: this.id+'-tb-multiweek', text: text, handler: this.onMultiWeekNavClick, scope: this, toggleGroup: this.id+'-tb-views'
+                id: this.id+'-tb-multiweek', 
+                text: text, 
+                handler: this.onMultiWeekNavClick, 
+                scope: this, 
+                toggleGroup: this.id+'-tb-views'
             });
             this.viewCount++;
         }
         if(this.showMonthView || this.viewCount == 0){
             this.tbar.items.push({
-                id: this.id+'-tb-month', text: this.monthText, handler: this.onMonthNavClick, scope: this, toggleGroup: this.id+'-tb-views'
+                id: this.id+'-tb-month', 
+                text: this.monthText, 
+                handler: this.onMonthNavClick, 
+                scope: this, 
+                toggleGroup: this.id+'-tb-views'
             });
             this.viewCount++;
             this.showMonthView = true;
@@ -353,16 +407,16 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
             editdetails: true
             
             
-            //
-            // NOTE: CalendarPanel also relays the following events from contained views as if they originated from this:
-            //
+        //
+        // NOTE: CalendarPanel also relays the following events from contained views as if they originated from this:
+        //
             
-            /**
+        /**
              * @event eventsrendered
              * Fires after events are finished rendering in the view
              * @param {Ext.ensible.cal.CalendarPanel} this 
              */
-            /**
+        /**
              * @event eventclick
              * <p>Fires after the user clicks on an event element.</p>
              * <p><strong>NOTE:</strong> This version of <code>eventclick</code> differs from the same event fired directly by
@@ -373,7 +427,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
              * @param {Ext.ensible.cal.EventRecord} rec The {@link Ext.ensible.cal.EventRecord record} for the event that was clicked on
              * @param {HTMLNode} el The DOM node that was clicked on
              */
-            /**
+        /**
              * @event rangeselect
              * Fires after the user drags on the calendar to select a range of dates/times in which to create an event
              * @param {Ext.ensible.cal.CalendarPanel} this
@@ -383,21 +437,21 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
              * range selection). The callback is already created in the proper scope, so it simply needs to be executed as a standard
              * function call (e.g., callback()).
              */
-            /**
+        /**
              * @event eventover
              * Fires anytime the mouse is over an event element
              * @param {Ext.ensible.cal.CalendarPanel} this
              * @param {Ext.ensible.cal.EventRecord} rec The {@link Ext.ensible.cal.EventRecord record} for the event that the cursor is over
              * @param {HTMLNode} el The DOM node that is being moused over
              */
-            /**
+        /**
              * @event eventout
              * Fires anytime the mouse exits an event element
              * @param {Ext.ensible.cal.CalendarPanel} this
              * @param {Ext.ensible.cal.EventRecord} rec The {@link Ext.ensible.cal.EventRecord record} for the event that the cursor exited
              * @param {HTMLNode} el The DOM node that was exited
              */
-            /**
+        /**
              * @event beforedatechange
              * Fires before the start date of the view changes, giving you an opportunity to save state or anything else you may need
              * to do prior to the UI view changing. This is a cancelable event, so returning false from a handler will cancel both the
@@ -408,7 +462,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
              * @param {Date} viewStart The first displayed date in the current view
              * @param {Date} viewEnd The last displayed date in the current view
              */
-            /**
+        /**
              * @event dayclick
              * Fires after the user clicks within a day/week view container and not on an event element
              * @param {Ext.ensible.cal.CalendarPanel} this
@@ -416,7 +470,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
              * @param {Boolean} allday True if the day clicked on represents an all-day box, else false.
              * @param {Ext.Element} el The Element that was clicked on
              */
-            /**
+        /**
              * @event datechange
              * Fires after the start date of the view changes
              * @param {Ext.ensible.cal.CalendarPanel} this
@@ -424,40 +478,40 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
              * @param {Date} viewStart The first displayed date in the view
              * @param {Date} viewEnd The last displayed date in the view
              */
-            /**
+        /**
              * @event beforeeventmove
              * Fires before an event element is dragged by the user and dropped in a new position. This is a cancelable event, so 
              * returning false from a handler will cancel the move operation.
              * @param {Ext.ensible.cal.CalendarPanel} this
              * @param {Ext.ensible.cal.EventRecord} rec The {@link Ext.ensible.cal.EventRecord record} for the event that will be moved
              */
-            /**
+        /**
              * @event eventmove
              * Fires after an event element is dragged by the user and dropped in a new position
              * @param {Ext.ensible.cal.CalendarPanel} this
              * @param {Ext.ensible.cal.EventRecord} rec The {@link Ext.ensible.cal.EventRecord record} for the event that was moved with
              * updated start and end dates
              */
-            /**
+        /**
              * @event initdrag
              * Fires when a drag operation is initiated in the view
              * @param {Ext.ensible.cal.CalendarPanel} this
              */
-            /**
+        /**
              * @event dayover
              * Fires while the mouse is over a day element 
              * @param {Ext.ensible.cal.CalendarPanel} this
              * @param {Date} dt The date that is being moused over
              * @param {Ext.Element} el The day Element that is being moused over
              */
-            /**
+        /**
              * @event dayout
              * Fires when the mouse exits a day element 
              * @param {Ext.ensible.cal.CalendarPanel} this
              * @param {Date} dt The date that is exited
              * @param {Ext.Element} el The day Element that is exited
              */
-            /**
+        /**
              * @event beforeeventresize
              * Fires after the user drags the resize handle of an event to resize it, but before the resize operation is carried out.
              * This is a cancelable event, so returning false from a handler will cancel the resize operation. <strong>NOTE:</strong>
@@ -466,7 +520,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
              * @param {Ext.ensible.cal.EventRecord} rec The {@link Ext.ensible.cal.EventRecord record} for the event that was resized
              * containing the updated start and end dates
              */
-            /**
+        /**
              * @event eventresize
              * Fires after the user drags the resize handle of an event and the resize operation is complete. <strong>NOTE:</strong>
              * This event is only fired from views that support event resizing.
@@ -569,10 +623,22 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
             calendarStore: this.calendarStore,
             enableRecurrence: this.enableRecurrence,
             listeners: {
-                'eventadd':    { scope: this, fn: this.onEventAdd },
-                'eventupdate': { scope: this, fn: this.onEventUpdate },
-                'eventdelete': { scope: this, fn: this.onEventDelete },
-                'eventcancel': { scope: this, fn: this.onEventCancel }
+                'eventadd':    {
+                    scope: this, 
+                    fn: this.onEventAdd
+                },
+                'eventupdate': {
+                    scope: this, 
+                    fn: this.onEventUpdate
+                },
+                'eventdelete': {
+                    scope: this, 
+                    fn: this.onEventDelete
+                },
+                'eventcancel': {
+                    scope: this, 
+                    fn: this.onEventCancel
+                }
             }
         }, this.editViewCfg));
     },
@@ -668,7 +734,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
     // private
     onWrite: function(store, action, data, resp, rec){
         switch(action){
-            case 'create': 
+            case 'create':
                 this.onStoreAdd(store, rec);
                 break;
             case 'update':
@@ -755,7 +821,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
     // private
     setActiveView: function(id){
         var l = this.layout,
-            tb = this.getTopToolbar();
+        tb = this.getTopToolbar();
             
         l.setActiveItem(id);
         this.activeView = l.activeItem;
@@ -771,17 +837,17 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
                 l.activeItem.setStartDate(this.startDate, true);
             }
             if(tb){
-               tb.show();
-           }
-           this.updateNavState();
+                tb.show();
+            }
+            this.updateNavState();
         }
         this.fireViewChange();
     },
     
     // private
-    fireViewChange: function(){
+    fireViewChange: function(){        
         var info = null, 
-            view = this.layout.activeItem;
+        view = this.layout.activeItem;
             
         if(view.getViewBounds){
             var vb = view.getViewBounds(),
@@ -791,6 +857,11 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
                 viewEnd: vb.end
             }
         }
+        
+        if (this.autoTitle === true) {   
+            this.updateAutoTitle(view, info);
+        }
+        
         if(view.dismissEventEditor){
             view.dismissEventEditor();
         }
@@ -798,10 +869,52 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
     },
     
     // private
+    // TODO: templating and date formatting config for autotitles
+    updateAutoTitle: function(view, info) {
+        var newTitle;
+                                
+        if (view instanceof Ext.ensible.cal.MultiDayView) {
+            newTitle = info.viewStart.format('M j') + ' - ';
+            if (info.viewStart.format('M') == info.viewEnd.format('M')) {
+                newTitle += info.viewEnd.format('j, Y')
+            } else {
+                // show month if ending month is different from start month
+                newTitle += info.viewEnd.format('M j, Y')
+            }   
+        } 
+        else if (view instanceof Ext.ensible.cal.DayView) {
+            newTitle = view.getStartDate().format('l, M j, Y');
+        }  
+        else if (view instanceof Ext.ensible.cal.WeekView) {
+            newTitle = info.viewStart.format('M j') + ' - ';
+            if (info.viewStart.format('M') == info.viewEnd.format('M')) {
+                newTitle += info.viewEnd.format('j, Y')
+            } else {
+                // show month if ending month is different from start month
+                newTitle += info.viewEnd.format('M j, Y')
+            }                    
+        }
+        else if (view instanceof Ext.ensible.cal.MultiWeekView) {
+            newTitle = info.viewStart.format('M j') + ' - ';
+            if (info.viewStart.format('M') == info.viewEnd.format('M')) {
+                newTitle += info.viewEnd.format('j, Y')
+            } else {
+                // show month if ending month is different from start month
+                newTitle += info.viewEnd.format('M j, Y')
+            } 
+        }         
+        else if (view instanceof Ext.ensible.cal.MonthView) {
+            newTitle = view.getStartDate().format('F Y');
+        }
+                
+        this.setTitle(newTitle);
+    },
+    
+    // private
     updateNavState: function(){
         if(this.showNavBar !== false){
             var item = this.layout.activeItem,
-                suffix = item.id.split(this.id+'-')[1];
+            suffix = item.id.split(this.id+'-')[1];
             
             if(this.showNavToday){
                 Ext.getCmp(this.id+'-tb-today').setDisabled(item.isToday());

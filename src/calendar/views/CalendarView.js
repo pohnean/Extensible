@@ -56,35 +56,35 @@ Ext.ensible.cal.CalendarView = Ext.extend(Ext.BoxComponent, {
      * Whether or not the view tracks and responds to the browser mouseover event on contained elements (defaults to
      * true). If you don't need mouseover event highlighting you can disable this.
      */
-	trackMouseOver: true,
+    trackMouseOver: true,
     /**
      * @cfg {Boolean} enableFx
      * Determines whether or not visual effects for CRUD actions are enabled (defaults to true). If this is false
      * it will override any values for {@link #enableAddFx}, {@link #enableUpdateFx} or {@link enableRemoveFx} and
      * all animations will be disabled.
      */
-	enableFx: true,
+    enableFx: true,
     /**
      * @cfg {Boolean} enableAddFx
      * True to enable a visual effect on adding a new event (the default), false to disable it. Note that if 
      * {@link #enableFx} is false it will override this value. The specific effect that runs is defined in the
      * {@link #doAddFx} method.
      */
-	enableAddFx: true,
+    enableAddFx: true,
     /**
      * @cfg {Boolean} enableUpdateFx
      * True to enable a visual effect on updating an event, false to disable it (the default). Note that if 
      * {@link #enableFx} is false it will override this value. The specific effect that runs is defined in the
      * {@link #doUpdateFx} method.
      */
-	enableUpdateFx: false,
+    enableUpdateFx: false,
     /**
      * @cfg {Boolean} enableRemoveFx
      * True to enable a visual effect on removing an event (the default), false to disable it. Note that if 
      * {@link #enableFx} is false it will override this value. The specific effect that runs is defined in the
      * {@link #doRemoveFx} method.
      */
-	enableRemoveFx: true,
+    enableRemoveFx: true,
     /**
      * @cfg {Boolean} enableDD
      * True to enable drag and drop in the calendar view (the default), false to disable it
@@ -122,13 +122,13 @@ Ext.ensible.cal.CalendarView = Ext.extend(Ext.BoxComponent, {
      * The text to display inside the drag proxy while dragging over the calendar to create a new event (defaults to 
      * 'Create event for {0}' where {0} is a date range supplied by the view)
      */
-	ddCreateEventText: 'Create event for {0}',
+    ddCreateEventText: 'Create event for {0}',
     /**
      * @cfg {String} ddMoveEventText
      * The text to display inside the drag proxy while dragging an event to reposition it (defaults to 
      * 'Move event to {0}' where {0} is the updated event start date/time supplied by the view)
      */
-	ddMoveEventText: 'Move event to {0}',
+    ddMoveEventText: 'Move event to {0}',
     /**
      * @cfg {String} ddResizeEventText
      * The string displayed to the user in the drag proxy while dragging the resize handle of an event (defaults to 
@@ -202,7 +202,7 @@ Ext.ensible.cal.CalendarView = Ext.extend(Ext.BoxComponent, {
     dayCount: 1,
     eventSelector : '.ext-cal-evt',
     eventOverClass: 'ext-evt-over',
-	eventElIdDelimiter: '-evt-',
+    eventElIdDelimiter: '-evt-',
     dayElIdDelimiter: '-day-',
     
     /**
@@ -347,7 +347,7 @@ viewConfig: {
              * range selection). The callback is already created in the proper scope, so it simply needs to be executed as a standard
              * function call (e.g., callback()).
              */
-			rangeselect: true,
+            rangeselect: true,
             /**
              * @event beforeeventmove
              * Fires before an event element is dragged by the user and dropped in a new position. This is a cancelable event, so 
@@ -366,7 +366,7 @@ viewConfig: {
              * @param {Ext.ensible.cal.EventRecord} rec The {@link Ext.ensible.cal.EventRecord record} for the event that was moved with
              * updated start and end dates
              */
-			eventmove: true,
+            eventmove: true,
             /**
              * @event initdrag
              * Fires when a drag operation is initiated in the view
@@ -466,7 +466,7 @@ viewConfig: {
             'mouseover': this.onMouseOver,
             'mouseout': this.onMouseOut,
             'click': this.onClick,
-			'resize': this.onResize,
+            'resize': this.onResize,
             scope: this
         });
         
@@ -475,10 +475,10 @@ viewConfig: {
             this.el.on('contextmenu', this.onContextMenu, this);
         }
 		
-		this.el.unselectable();
+        this.el.unselectable();
         
         if(this.enableDD && this.readOnly !== true && this.initDD){
-			this.initDD();
+            this.initDD();
         }
         
         this.on('eventsrendered', this.forceSize);
@@ -537,12 +537,12 @@ viewConfig: {
     forceSize: function(){
         if(this.el && this.el.child){
             var hd = this.el.child('.ext-cal-hd-ct'),
-                bd = this.el.child('.ext-cal-body-ct');
+            bd = this.el.child('.ext-cal-body-ct');
                 
             if(bd==null || hd==null) return;
                 
             var headerHeight = hd.getHeight(),
-                sz = this.el.parent().getSize();
+            sz = this.el.parent().getSize();
                    
             bd.setHeight(sz.height-headerHeight);
         }
@@ -574,9 +574,9 @@ viewConfig: {
     // private
     prepareData : function(){
         var lastInMonth = this.startDate.getLastDateOfMonth(),
-            w = 0, row = 0,
-            dt = this.viewStart.clone(),
-            weeks = this.weekCount < 1 ? 6 : this.weekCount;
+        w = 0, row = 0,
+        dt = this.viewStart.clone(),
+        weeks = this.weekCount < 1 ? 6 : this.weekCount;
         
         this.eventGrid = [[]];
         this.allDayGrid = [[]];
@@ -585,6 +585,19 @@ viewConfig: {
         var evtsInView = this.store.queryBy(function(rec){
             return this.isEventVisible(rec.data);
         }, this);
+        
+        var recurringEvts = this.store.queryBy(function(rec){
+            return this.isEventRecurring(rec.data);
+        }, this);
+        
+        if (recurringEvts.getCount() > 0) {
+            
+            recurringEvts.each(function(rec){
+                var recurringEvent = new Ext.ensible.cal.RecurringEvent(rec.data);
+                
+                recurringEvent.findAllOccurences(this.viewStart, this.viewEnd);
+            }, this);
+        }
         
         for(; w < weeks; w++){
             this.evtMaxCount[w] = 0;
@@ -597,14 +610,14 @@ viewConfig: {
             
             for(d = 0; d < this.dayCount; d++){
                 if(evtsInView.getCount() > 0){
-                    var evts = evtsInView.filterBy(function(rec){
+                    var cellData = evtsInView.filterBy(function(rec){
                         var startsOnDate = (dt.getTime() == rec.data[Ext.ensible.cal.EventMappings.StartDate.name].clearTime(true).getTime());
                         var spansFromPrevView = (w == 0 && d == 0 && (dt > rec.data[Ext.ensible.cal.EventMappings.StartDate.name]));
                         return startsOnDate || spansFromPrevView;
                     }, this);
                     
-                    this.sortEventRecordsForDay(evts);
-                    this.prepareEventGrid(evts, w, d);
+                    this.sortEventRecordsForDay(cellData);
+                    this.prepareEventGrid(cellData, w, d);
                 }
                 dt = dt.add(Date.DAY, 1);
             }
@@ -613,31 +626,31 @@ viewConfig: {
     },
     
     // private
-    prepareEventGrid : function(evts, w, d){
+    prepareEventGrid : function(cellData, w, d){
         var row = 0,
-            dt = this.viewStart.clone(),
-            max = this.maxEventsPerDay ? this.maxEventsPerDay : 999;
+        dt = this.viewStart.clone(),
+        max = this.maxEventsPerDay ? this.maxEventsPerDay : 999;
         
-        evts.each(function(evt){
+        cellData.each(function(cell){
             var M = Ext.ensible.cal.EventMappings;
             
-            if(Ext.ensible.Date.diffDays(evt.data[M.StartDate.name], evt.data[M.EndDate.name]) > 0){
+            if(Ext.ensible.Date.diffDays(cell.data[M.StartDate.name], cell.data[M.EndDate.name]) > 0){
                 var daysInView = Ext.ensible.Date.diffDays(
-                    Ext.ensible.Date.max(this.viewStart, evt.data[M.StartDate.name]),
-                    Ext.ensible.Date.min(this.viewEnd, evt.data[M.EndDate.name])) + 1;
+                    Ext.ensible.Date.max(this.viewStart, cell.data[M.StartDate.name]),
+                    Ext.ensible.Date.min(this.viewEnd, cell.data[M.EndDate.name])) + 1;
                     
-                this.prepareEventGridSpans(evt, this.eventGrid, w, d, daysInView);
-                this.prepareEventGridSpans(evt, this.allDayGrid, w, d, daysInView, true);
+                this.prepareEventGridSpans(cell, this.eventGrid, w, d, daysInView);
+                this.prepareEventGridSpans(cell, this.allDayGrid, w, d, daysInView, true);
             }
             else{
                 row = this.findEmptyRowIndex(w,d);
                 this.eventGrid[w][d] = this.eventGrid[w][d] || [];
-                this.eventGrid[w][d][row] = evt;
+                this.eventGrid[w][d][row] = cell;
                 
-                if(evt.data[M.IsAllDay.name]){
+                if(cell.data[M.IsAllDay.name]){
                     row = this.findEmptyRowIndex(w,d, true);
                     this.allDayGrid[w][d] = this.allDayGrid[w][d] || [];
-                    this.allDayGrid[w][d][row] = evt;
+                    this.allDayGrid[w][d][row] = cell;
                 }
             }
             
@@ -649,16 +662,16 @@ viewConfig: {
     },
     
     // private
-    prepareEventGridSpans : function(evt, grid, w, d, days, allday){
+    prepareEventGridSpans : function(cell, grid, w, d, days, allday){
         // this event spans multiple days/weeks, so we have to preprocess
         // the events and store special span events as placeholders so that
         // the render routine can build the necessary TD spans correctly.
         var w1 = w, d1 = d, 
-            row = this.findEmptyRowIndex(w,d,allday),
-            dt = this.viewStart.clone();
+        row = this.findEmptyRowIndex(w,d,allday),
+        dt = this.viewStart.clone();
         
         var start = {
-            event: evt,
+            event: cell,
             isSpan: true,
             isSpanStart: true,
             spanLeft: false,
@@ -674,14 +687,15 @@ viewConfig: {
             }
             if(++d1>6){
                 // reset counters to the next week
-                d1 = 0; w1++;
+                d1 = 0;
+                w1++;
                 row = this.findEmptyRowIndex(w1,0);
             }
             grid[w1] = grid[w1] || [];
             grid[w1][d1] = grid[w1][d1] || [];
             
             grid[w1][d1][row] = {
-                event: evt,
+                event: cell,
                 isSpan: true,
                 isSpanStart: (d1 == 0),
                 spanLeft: (w1 > w) && (d1 % 7 == 0),
@@ -693,8 +707,8 @@ viewConfig: {
     // private
     findEmptyRowIndex : function(w, d, allday){
         var grid = allday ? this.allDayGrid : this.eventGrid,
-            day = grid[w] ? grid[w][d] || [] : [],
-            i = 0, ln = day.length;
+        day = grid[w] ? grid[w][d] || [] : [],
+        i = 0, ln = day.length;
             
         for(; i < ln; i++){
             if(day[i] == null){
@@ -733,58 +747,60 @@ viewConfig: {
      * refresh itself automatically when CRUD actions occur. To enable store events see {@link #enableStoreEvents}.
      * @return {CalendarView} this
      */
-	disableStoreEvents : function(){
-		this.monitorStoreEvents = false;
+    disableStoreEvents : function(){
+        this.monitorStoreEvents = false;
         return this;
-	},
+    },
 	
     /**
      * Enable store event monitoring within this view if disabled by {@link #disbleStoreEvents}.
      * @return {CalendarView} this
      */
-	enableStoreEvents : function(refresh){
-		this.monitorStoreEvents = true;
-		if(refresh === true){
-			this.refresh();
-		}
+    enableStoreEvents : function(refresh){
+        this.monitorStoreEvents = true;
+        if(refresh === true){
+            this.refresh();
+        }
         return this;
-	},
+    },
 	
     // private
-	onResize : function(){
-		this.refresh(false);
-	},
+    onResize : function(){
+        this.refresh(false);
+    },
 	
     // private
-	onInitDrag : function(){
+    onInitDrag : function(){
         this.fireEvent('initdrag', this);
     },
 	
     // private
-	onEventDrop : function(rec, dt){
+    onEventDrop : function(rec, dt){
         this.moveEvent(rec, dt);
-	},
+    },
     
     // private
-	onCalendarEndDrag : function(start, end, onComplete){
+    onCalendarEndDrag : function(start, end, onComplete){
         // set this flag for other event handlers that might conflict while we're waiting
         this.dragPending = true;
         
         var dates = {},
-            onComplete = this.onCalendarEndDragComplete.createDelegate(this, [onComplete]);
+        onComplete = this.onCalendarEndDragComplete.createDelegate(this, [onComplete]);
         
         dates[Ext.ensible.cal.EventMappings.StartDate.name] = start;
         dates[Ext.ensible.cal.EventMappings.EndDate.name] = end;
         
         if(this.fireEvent('rangeselect', this, dates, onComplete) !== false){
             this.showEventEditor(dates, null);
-            this.editWin.on('hide', onComplete, this, {single:true});
+            this.editWin.on('hide', onComplete, this, {
+                single:true
+            });
         }
         else{
             // client code canceled the selection so clean up immediately
             this.onCalendarEndDragComplete(onComplete);
         }
-	},
+    },
     
     // private
     onCalendarEndDragComplete : function(onComplete){
@@ -808,11 +824,11 @@ viewConfig: {
             // any event instances were updated on the server
             this.refresh(rrule !== undefined && rrule !== '');
             
-			if(this.enableFx && this.enableUpdateFx){
-				this.doUpdateFx(this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]), {
+            if(this.enableFx && this.enableUpdateFx){
+                this.doUpdateFx(this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]), {
                     scope: this
                 });
-			}
+            }
         }
     },
     
@@ -826,9 +842,9 @@ viewConfig: {
      * object only contains the current scope (<tt>{scope:this}</tt>) but you can also add any additional fx-specific 
      * options that might be needed for a particular effect to this object.
      */
-	doUpdateFx : function(els, o){
-		this.highlightEvent(els, null, o);
-	},
+    doUpdateFx : function(els, o){
+        this.highlightEvent(els, null, o);
+    },
 	
     // private
     onAdd : function(ds, recs, index){
@@ -843,19 +859,19 @@ viewConfig: {
         
         Ext.ensible.log('onAdd');
         
-		var rrule = rec.data[Ext.ensible.cal.EventMappings.RRule.name];
+        var rrule = rec.data[Ext.ensible.cal.EventMappings.RRule.name];
         
         this.dismissEventEditor();    
-		this.tempEventId = rec.id;
+        this.tempEventId = rec.id;
         // if the new event has a recurrence rule we have to reload the store in case
         // new event instances were generated on the server
-		this.refresh(rrule !== undefined && rrule !== '');
+        this.refresh(rrule !== undefined && rrule !== '');
 		
-		if(this.enableFx && this.enableAddFx){
-			this.doAddFx(this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]), {
+        if(this.enableFx && this.enableAddFx){
+            this.doAddFx(this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]), {
                 scope: this
             });
-		};
+        };
     },
 	
     /**
@@ -868,9 +884,11 @@ viewConfig: {
      * object only contains the current scope (<tt>{scope:this}</tt>) but you can also add any additional fx-specific 
      * options that might be needed for a particular effect to this object.
      */
-	doAddFx : function(els, o){
-		els.fadeIn(Ext.apply(o, {duration:2}));
-	},
+    doAddFx : function(els, o){
+        els.fadeIn(Ext.apply(o, {
+            duration:2
+        }));
+    },
 	
     // private
     onRemove : function(ds, rec){
@@ -882,21 +900,21 @@ viewConfig: {
         this.dismissEventEditor();
         
         var rrule = rec.data[Ext.ensible.cal.EventMappings.RRule.name],
-            // if the new event has a recurrence rule we have to reload the store in case
-            // new event instances were generated on the server
-            isRecurring = rrule !== undefined && rrule !== '';
+        // if the new event has a recurrence rule we have to reload the store in case
+        // new event instances were generated on the server
+        isRecurring = rrule !== undefined && rrule !== '';
         
-		if(this.enableFx && this.enableRemoveFx){
-			this.doRemoveFx(this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]), {
-	            remove: true,
-	            scope: this,
-				callback: this.refresh.createDelegate(this, [isRecurring])
-			});
-		}
-		else{
-			this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]).remove();
+        if(this.enableFx && this.enableRemoveFx){
+            this.doRemoveFx(this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]), {
+                remove: true,
+                scope: this,
+                callback: this.refresh.createDelegate(this, [isRecurring])
+            });
+        }
+        else{
+            this.getEventEls(rec.data[Ext.ensible.cal.EventMappings.EventId.name]).remove();
             this.refresh(isRecurring);
-		}
+        }
     },
 	
     /**
@@ -918,7 +936,7 @@ viewConfig: {
      * callback method (and scope) MUST still be passed in order for the view to refresh correctly after the removal.
      * Please see the inline code comments before overriding this method. 
      */
-	doRemoveFx : function(els, o){
+    doRemoveFx : function(els, o){
         // Please make sure you keep this entire code block or removing events might not work correctly!
         // Removing is a little different because we have to wait for the fx to finish, then we have to actually
         // refresh the view AFTER the fx are run (this is different than add and update).
@@ -933,9 +951,9 @@ viewConfig: {
             // you still pass that object in whatever fx method you choose.
             els.fadeOut(o);
         }
-	},
+    },
 	
-	/**
+    /**
 	 * Visually highlights an event using {@link Ext.Fx#highlight} config options.
 	 * @param {Ext.CompositeElement} els The element(s) to highlight
 	 * @param {Object} color (optional) The highlight color. Should be a 6 char hex 
@@ -943,35 +961,37 @@ viewConfig: {
 	 * @param {Object} o (optional) Object literal with any of the {@link Ext.Fx} config 
 	 * options. See {@link Ext.Fx#highlight} for usage examples.
 	 */
-	highlightEvent : function(els, color, o) {
-		if(this.enableFx){
-			var c;
-			!(Ext.isIE || Ext.isOpera) ? 
-				els.highlight(color, o) :
-				// Fun IE/Opera handling:
-				els.each(function(el){
-					el.highlight(color, Ext.applyIf({attr:'color'}, o));
-					if(c = el.child('.ext-cal-evm')) {
-						c.highlight(color, o);
-					}
-				}, this);
-		}
-	},
+    highlightEvent : function(els, color, o) {
+        if(this.enableFx){
+            var c;
+            !(Ext.isIE || Ext.isOpera) ? 
+            els.highlight(color, o) :
+            // Fun IE/Opera handling:
+            els.each(function(el){
+                el.highlight(color, Ext.applyIf({
+                    attr:'color'
+                }, o));
+                if(c = el.child('.ext-cal-evm')) {
+                    c.highlight(color, o);
+                }
+            }, this);
+        }
+    },
 	
-	/**
+    /**
 	 * Retrieve an Event object's id from its corresponding node in the DOM.
 	 * @param {String/Element/HTMLElement} el An {@link Ext.Element}, DOM node or id
 	 */
-//	getEventIdFromEl : function(el){
-//		el = Ext.get(el);
-//		var id = el.id.split(this.eventElIdDelimiter)[1];
-//        if(id.indexOf('-w_') > -1){
-//            //This id has the index of the week it is rendered in as part of the suffix.
-//            //This allows events that span across weeks to still have reproducibly-unique DOM ids.
-//            id = id.split('-w_')[0];
-//        }
-//        return id;
-//	},
+    //	getEventIdFromEl : function(el){
+    //		el = Ext.get(el);
+    //		var id = el.id.split(this.eventElIdDelimiter)[1];
+    //        if(id.indexOf('-w_') > -1){
+    //            //This id has the index of the week it is rendered in as part of the suffix.
+    //            //This allows events that span across weeks to still have reproducibly-unique DOM ids.
+    //            id = id.split('-w_')[0];
+    //        }
+    //        return id;
+    //	},
     getEventIdFromEl : function(el){
         el = Ext.get(el);
         var parts, id = '', cls, classes = el.dom.className.split(' ');
@@ -987,37 +1007,37 @@ viewConfig: {
         return id;
     },
 	
-	// private
-	getEventId : function(eventId){
-		if(eventId === undefined && this.tempEventId){
+    // private
+    getEventId : function(eventId){
+        if(eventId === undefined && this.tempEventId){
             // temp record id assigned during an add, will be overwritten later
-			eventId = this.tempEventId;
-		}
-		return eventId;
-	},
+            eventId = this.tempEventId;
+        }
+        return eventId;
+    },
 	
-	/**
+    /**
 	 * 
 	 * @param {String} eventId
 	 * @param {Boolean} forSelect
 	 * @return {String} The selector class
 	 */
-	getEventSelectorCls : function(eventId, forSelect){
-		var prefix = forSelect ? '.' : '';
-		return prefix + this.id + this.eventElIdDelimiter + this.getEventId(eventId);
-	},
+    getEventSelectorCls : function(eventId, forSelect){
+        var prefix = forSelect ? '.' : '';
+        return prefix + this.id + this.eventElIdDelimiter + this.getEventId(eventId);
+    },
 
-	/**
+    /**
 	 * 
 	 * @param {String} eventId
 	 * @return {Ext.CompositeElement} The matching CompositeElement of nodes
 	 * that comprise the rendered event.  Any event that spans across a view 
 	 * boundary will contain more than one internal Element.
 	 */
-	getEventEls : function(eventId){
-		var els = this.el.select(this.getEventSelectorCls(this.getEventId(eventId), true), false);
-		return new Ext.CompositeElement(els);
-	},
+    getEventEls : function(eventId){
+        var els = this.el.select(this.getEventSelectorCls(this.getEventId(eventId), true), false);
+        return new Ext.CompositeElement(els);
+    },
     
     /**
      * Returns true if the view is currently displaying today's date, else false.
@@ -1037,9 +1057,9 @@ viewConfig: {
     // private
     isEventVisible : function(evt){
         var M = Ext.ensible.cal.EventMappings,
-            data = evt.data ? evt.data : evt,
-            calId = data[M.CalendarId.name],
-            calRec = this.calendarStore ? this.calendarStore.getById(calId) : null;
+        data = evt.data ? evt.data : evt,
+        calId = data[M.CalendarId.name],
+        calRec = this.calendarStore ? this.calendarStore.getById(calId) : null;
             
         if(calRec && calRec.data[Ext.ensible.cal.CalendarMappings.IsHidden.name] === true){
             // if the event is on a hidden calendar then no need to test the date boundaries
@@ -1047,37 +1067,42 @@ viewConfig: {
         }
             
         var start = this.viewStart.getTime(),
-            end = this.viewEnd.getTime(),
-            evStart = data[M.StartDate.name].getTime(),
-            evEnd = data[M.EndDate.name].getTime();
+        end = this.viewEnd.getTime(),
+        evStart = data[M.StartDate.name].getTime(),
+        evEnd = data[M.EndDate.name].getTime();
             
         return Ext.ensible.Date.rangesOverlap(start, end, evStart, evEnd);
     },
     
     // private
+    isEventRecurring : function(evt) {
+        return (evt.RecurRule !== null && evt.RecurRule !== '');
+    },
+    
+    // private
     isOverlapping : function(evt1, evt2){
         var ev1 = evt1.data ? evt1.data : evt1,
-            ev2 = evt2.data ? evt2.data : evt2,
-            M = Ext.ensible.cal.EventMappings,
-            start1 = ev1[M.StartDate.name].getTime(),
-            end1 = ev1[M.EndDate.name].add(Date.SECOND, -1).getTime(),
-            start2 = ev2[M.StartDate.name].getTime(),
-            end2 = ev2[M.EndDate.name].add(Date.SECOND, -1).getTime(),
-            startDiff = Ext.ensible.Date.diff(ev1[M.StartDate.name], ev2[M.StartDate.name], 'm');
+        ev2 = evt2.data ? evt2.data : evt2,
+        M = Ext.ensible.cal.EventMappings,
+        start1 = ev1[M.StartDate.name].getTime(),
+        end1 = ev1[M.EndDate.name].add(Date.SECOND, -1).getTime(),
+        start2 = ev2[M.StartDate.name].getTime(),
+        end2 = ev2[M.EndDate.name].add(Date.SECOND, -1).getTime(),
+        startDiff = Ext.ensible.Date.diff(ev1[M.StartDate.name], ev2[M.StartDate.name], 'm');
             
-            if(end1<start1){
-                end1 = start1;
-            }
-            if(end2<start2){
-                end2 = start2;
-            }
+        if(end1<start1){
+            end1 = start1;
+        }
+        if(end2<start2){
+            end2 = start2;
+        }
             
-//            var ev1startsInEv2 = (start1 >= start2 && start1 <= end2),
-//            ev1EndsInEv2 = (end1 >= start2 && end1 <= end2),
-//            ev1SpansEv2 = (start1 < start2 && end1 > end2),
-            var evtsOverlap = Ext.ensible.Date.rangesOverlap(start1, end1, start2, end2),
-                minimumMinutes = this.minEventDisplayMinutes || 0, // applies in day/week body view only for vertical overlap
-                ev1MinHeightOverlapsEv2 = minimumMinutes > 0 && (startDiff > -minimumMinutes && startDiff < minimumMinutes);
+        //            var ev1startsInEv2 = (start1 >= start2 && start1 <= end2),
+        //            ev1EndsInEv2 = (end1 >= start2 && end1 <= end2),
+        //            ev1SpansEv2 = (start1 < start2 && end1 > end2),
+        var evtsOverlap = Ext.ensible.Date.rangesOverlap(start1, end1, start2, end2),
+        minimumMinutes = this.minEventDisplayMinutes || 0, // applies in day/week body view only for vertical overlap
+        ev1MinHeightOverlapsEv2 = minimumMinutes > 0 && (startDiff > -minimumMinutes && startDiff < minimumMinutes);
         
         //return (ev1startsInEv2 || ev1EndsInEv2 || ev1SpansEv2 || ev1MinHeightOverlapsEv2);
         return (evtsOverlap || ev1MinHeightOverlapsEv2);
@@ -1126,7 +1151,7 @@ viewConfig: {
     // private
     setViewBounds : function(startDate){
         var start = startDate || this.startDate,
-            offset = start.getDay() - this.startDay;
+        offset = start.getDay() - this.startDay;
         
         if(offset < 0){
             // if the offset is negative then some days will be in the previous week so add a week to the offset
@@ -1184,7 +1209,7 @@ alert('End: '+bounds.end);
         }
     },
 	
-	/* private
+    /* private
 	 * Sort events for a single day for display in the calendar.  This sorts allday
 	 * events first, then non-allday events are sorted either based on event start
 	 * priority or span priority based on the value of {@link #spansHavePriority} 
@@ -1192,54 +1217,54 @@ alert('End: '+bounds.end);
 	 * @param {MixedCollection} evts A {@link Ext.util.MixedCollection MixedCollection}  
 	 * of {@link #Ext.ensible.cal.EventRecord EventRecord} objects
 	 */
-	sortEventRecordsForDay: function(evts){
+    sortEventRecordsForDay: function(evts){
         if(evts.length < 2){
             return;
         }
-		evts.sort('ASC', function(evtA, evtB){
-			var a = evtA.data, b = evtB.data,
-                M = Ext.ensible.cal.EventMappings;
+        evts.sort('ASC', function(evtA, evtB){
+            var a = evtA.data, b = evtB.data,
+            M = Ext.ensible.cal.EventMappings;
 			
-			// Always sort all day events before anything else
-			if (a[M.IsAllDay.name]) {
-				return -1;
-			}
-			else if (b[M.IsAllDay.name]) {
-				return 1;
-			}
-			if (this.spansHavePriority) {
-				// This logic always weights span events higher than non-span events 
-				// (at the possible expense of start time order). This seems to 
-				// be the approach used by Google calendar and can lead to a more
-				// visually appealing layout in complex cases, but event order is
-				// not guaranteed to be consistent.
-				var diff = Ext.ensible.Date.diffDays;
-				if (diff(a[M.StartDate.name], a[M.EndDate.name]) > 0) {
-					if (diff(b[M.StartDate.name], b[M.EndDate.name]) > 0) {
-						// Both events are multi-day
-						if (a[M.StartDate.name].getTime() == b[M.StartDate.name].getTime()) {
-							// If both events start at the same time, sort the one
-							// that ends later (potentially longer span bar) first
-							return b[M.EndDate.name].getTime() - a[M.EndDate.name].getTime();
-						}
-						return a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime();
-					}
-					return -1;
-				}
-				else if (diff(b[M.StartDate.name], b[M.EndDate.name]) > 0) {
-					return 1;
-				}
-				return a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime();
-			}
-			else {
-				// Doing this allows span and non-span events to intermingle but
-				// remain sorted sequentially by start time. This seems more proper
-				// but can make for a less visually-compact layout when there are
-				// many such events mixed together closely on the calendar.
-				return a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime();
-			}
-		}.createDelegate(this));
-	},
+            // Always sort all day events before anything else
+            if (a[M.IsAllDay.name]) {
+                return -1;
+            }
+            else if (b[M.IsAllDay.name]) {
+                return 1;
+            }
+            if (this.spansHavePriority) {
+                // This logic always weights span events higher than non-span events 
+                // (at the possible expense of start time order). This seems to 
+                // be the approach used by Google calendar and can lead to a more
+                // visually appealing layout in complex cases, but event order is
+                // not guaranteed to be consistent.
+                var diff = Ext.ensible.Date.diffDays;
+                if (diff(a[M.StartDate.name], a[M.EndDate.name]) > 0) {
+                    if (diff(b[M.StartDate.name], b[M.EndDate.name]) > 0) {
+                        // Both events are multi-day
+                        if (a[M.StartDate.name].getTime() == b[M.StartDate.name].getTime()) {
+                            // If both events start at the same time, sort the one
+                            // that ends later (potentially longer span bar) first
+                            return b[M.EndDate.name].getTime() - a[M.EndDate.name].getTime();
+                        }
+                        return a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime();
+                    }
+                    return -1;
+                }
+                else if (diff(b[M.StartDate.name], b[M.EndDate.name]) > 0) {
+                    return 1;
+                }
+                return a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime();
+            }
+            else {
+                // Doing this allows span and non-span events to intermingle but
+                // remain sorted sequentially by start time. This seems more proper
+                // but can make for a less visually-compact layout when there are
+                // many such events mixed together closely on the calendar.
+                return a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime();
+            }
+        }.createDelegate(this));
+    },
     
     /**
      * Updates the view to contain the passed date
@@ -1364,9 +1389,9 @@ alert('End: '+bounds.end);
     },
 	
     // private
-	getEventRecordFromEl : function(el){
-		return this.getEventRecord(this.getEventIdFromEl(el));
-	},
+    getEventRecordFromEl : function(el){
+        return this.getEventRecord(this.getEventIdFromEl(el));
+    },
     
     // private
     getEventEditor : function(){
@@ -1473,7 +1498,7 @@ alert('End: '+bounds.end);
     // private
     onWrite: function(store, action, data, resp, rec){
         switch(action){
-            case 'create': 
+            case 'create':
                 this.onAdd(store, rec);
                 break;
             case 'update':
@@ -1522,7 +1547,7 @@ alert('End: '+bounds.end);
         }
         if(this.fireEvent('dayclick', this, dt, ad, el) !== false){
             var M = Ext.ensible.cal.EventMappings,
-                data = {};
+            data = {};
                 
             data[M.StartDate.name] = dt;
             data[M.IsAllDay.name] = ad;
@@ -1633,7 +1658,7 @@ alert('End: '+bounds.end);
         var el = e.getTarget(this.eventSelector, 5);
         if(el){
             var id = this.getEventIdFromEl(el),
-                rec = this.getEventRecord(id);
+            rec = this.getEventRecord(id);
             
             if(this.fireEvent('eventclick', this, rec, el) !== false){
                 this.showEventEditor(rec, el);
@@ -1692,8 +1717,8 @@ alert('End: '+bounds.end);
         if(t = e.getTarget('td', 3)){
             if(t.id && t.id.indexOf(this.dayElIdDelimiter) > -1){
                 var dt = this.getDateFromId(t.id, this.dayElIdDelimiter),
-                    rel = Ext.get(e.getRelatedTarget()),
-                    relTD, relDate;
+                rel = Ext.get(e.getRelatedTarget()),
+                relTD, relDate;
                 
                 if(rel){
                     relTD = rel.is('td') ? rel : rel.up('td', 3);
@@ -1726,6 +1751,6 @@ alert('End: '+bounds.end);
             this.eventMenu,
             this.dragZone,
             this.dropZone
-        );
+            );
     }
 });
