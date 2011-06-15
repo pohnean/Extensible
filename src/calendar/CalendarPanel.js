@@ -622,6 +622,8 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
             id: this.id+'-edit',
             calendarStore: this.calendarStore,
             enableRecurrence: this.enableRecurrence,
+            dateFormat: this.dateFormat,
+            timeFormat: this.timeFormat,
             listeners: {
                 'eventadd':    {
                     scope: this, 

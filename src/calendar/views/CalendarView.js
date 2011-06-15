@@ -12,6 +12,21 @@
  */
 Ext.ensible.cal.CalendarView = Ext.extend(Ext.BoxComponent, {
     /**
+     * @cfg {String} dateFormat
+     * The date display format used by the date fields (defaults to 'n/j/Y') 
+     */
+    dateFormat: 'n/j/y',
+    /**
+     * @cfg {String} timeFormat
+     * The time display format used by the time fields (defaults to 'g:i A') 
+     */
+    timeFormat: 'g:i A',
+    /**
+     * @cfg {Number} startDay
+     * The 0-based index for the day on which the calendar week begins (0=Sunday, which is the default)
+     */
+    startDay: 0,
+    /**
      * @cfg {Ext.data.Store} eventStore
      * The {@link Ext.data.Store store} which is bound to this calendar and contains {@link Ext.ensible.cal.EventRecord EventRecords}.
      * Note that this is an alias to the default {@link #store} config (to differentiate that from the optional {@link #calendarStore}
@@ -589,13 +604,19 @@ viewConfig: {
         var recurringEvts = this.store.queryBy(function(rec){
             return this.isEventRecurring(rec.data);
         }, this);
+                
+        var occurencesInView = [];
         
         if (recurringEvts.getCount() > 0) {
             
             recurringEvts.each(function(rec){
-                var recurringEvent = new Ext.ensible.cal.RecurringEvent(rec.data);
+                var recurringEvent = new Ext.ensible.cal.RecurringEvent(rec);
+                                
+                var evtOccurences = recurringEvent.findAllOccurences(this.viewStart, this.viewEnd);
                 
-                recurringEvent.findAllOccurences(this.viewStart, this.viewEnd);
+                occurencesInView = occurencesInView.concat(evtOccurences);
+                
+                evtsInView.addAll(evtOccurences);
             }, this);
         }
         
@@ -607,7 +628,7 @@ viewConfig: {
             }
             this.eventGrid[w] = this.eventGrid[w] || [];
             this.allDayGrid[w] = this.allDayGrid[w] || [];
-            
+
             for(d = 0; d < this.dayCount; d++){
                 if(evtsInView.getCount() > 0){
                     var cellData = evtsInView.filterBy(function(rec){
@@ -1404,6 +1425,9 @@ alert('End: '+bounds.end);
                 calendarStore: this.calendarStore,
                 modal: this.editModal,
                 enableEditDetails: this.enableEditDetails,
+                startDay: this.startDay,
+                dateFormat: this.dateFormat,
+                timeFormat: this.timeFormat,
                 listeners: {
                     'eventadd': {
                         fn: function(win, rec, animTarget){

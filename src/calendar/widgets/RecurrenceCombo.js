@@ -38,7 +38,7 @@ Ext.ensible.cal.RecurrenceCombo = Ext.extend(Ext.form.ComboBox, {
     
     initValue : function(){
         Ext.ensible.cal.RecurrenceCombo.superclass.initValue.call(this);
-        if(this.value != undefined){
+        if(this.value != undefined){            
             this.fireEvent('recurrencechange', this.value);
         }
     },

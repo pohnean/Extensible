@@ -21,7 +21,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
     return {
         render: function(o){
             var w = 0, grid = o.eventGrid, 
-                eventStartDate = o.viewStart.clone(),
+                dt = o.viewStart.clone(),
                 eventTpl = o.tpl,
                 max = o.maxEventsPerDay != undefined ? o.maxEventsPerDay : 999,
                 weekCount = o.weekCount < 1 ? 6 : o.weekCount,
@@ -29,7 +29,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
             
             for(; w < weekCount; w++){
                 var row, d = 0, wk = grid[w];
-                var startOfWeek = eventStartDate.clone();
+                var startOfWeek = dt.clone();
                 var endOfWeek = startOfWeek.add(Date.DAY, dayCount).add(Date.MILLI, -1);
                 
                 for(; d < dayCount; d++){
@@ -48,7 +48,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
                                     tag: 'td',
                                     cls: 'ext-cal-ev',
                                     html: '&#160;',
-                                    id: o.id+'-empty-'+ct+'-day-'+eventStartDate.format('Ymd')
+                                    id: o.id+'-empty-'+ct+'-day-'+dt.format('Ymd')
                                 }
                                 if(emptyCells > 1 && max-ev > emptyCells){
                                     cellCfg.rowspan = Math.min(emptyCells, max-ev);
@@ -78,9 +78,8 @@ Ext.ensible.cal.WeekEventRenderer = function(){
                                         cls: 'ext-cal-ev',
                                         cn : eventTpl.apply(o.templateDataFn(item))
                                     },
-                                    eventEndDate = item[Ext.ensible.cal.EventMappings.EndDate.name],
-                                    diffTime = Ext.ensible.Date.diff(eventStartDate, eventEndDate),
-                                    cspan = Math.ceil(diffTime / 86400000);
+                                    diff = Ext.ensible.Date.diffDays(dt, item[Ext.ensible.cal.EventMappings.EndDate.name]) + 1,
+                                    cspan = Math.min(diff, dayCount-d);
                                                                         
                                 if(cspan > 1){
                                     cellCfg.colspan = cspan;
@@ -93,7 +92,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
                             Ext.DomHelper.append(row, {
                                 tag: 'td',
                                 cls: 'ext-cal-ev-more',
-                                id: 'ext-cal-ev-more-'+eventStartDate.format('Ymd'),
+                                id: 'ext-cal-ev-more-'+dt.format('Ymd'),
                                 cn: {
                                     tag: 'a',
                                     html: String.format(o.getMoreText(skipped), skipped)
@@ -107,7 +106,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
                                     tag: 'td',
                                     cls: 'ext-cal-ev',
                                     //html: '&#160;',
-                                    id: o.id+'-empty-'+(ct+1)+'-day-'+eventStartDate.format('Ymd')
+                                    id: o.id+'-empty-'+(ct+1)+'-day-'+dt.format('Ymd')
                                 };
                                 var rowspan = o.evtMaxCount[w] - ct;
                                 if(rowspan > 1){
@@ -123,7 +122,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
                                 tag: 'td',
                                 cls: 'ext-cal-ev',
                                 html: '&#160;',
-                                id: o.id+'-empty-day-'+eventStartDate.format('Ymd')
+                                id: o.id+'-empty-day-'+dt.format('Ymd')
                             };
                             if(o.evtMaxCount[w] > 1){
                                 cellCfg.rowspan = o.evtMaxCount[w];
@@ -131,7 +130,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
                             Ext.DomHelper.append(row, cellCfg);
                         }
                     }
-                    eventStartDate = eventStartDate.add(Date.DAY, 1);
+                    dt = dt.add(Date.DAY, 1);
                 }
             }
         }

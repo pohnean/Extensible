@@ -36,13 +36,24 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
      * @cfg {String} dateFormat
      * The date display format used by the date fields (defaults to 'n/j/Y') 
      */
-    dateFormat: 'n/j/Y',
+    dateFormat: 'n/j/y',
+    /**
+     * @cfg {String} timeFormat
+     * The time display format used by the time fields (defaults to 'g:i A') 
+     */
+    timeFormat: 'g:i A',
+    /**
+     * @cfg {Number} startDay
+     * The 0-based index for the day on which the calendar week begins (0=Sunday, which is the default)
+     */
+    startDay: 0,
     
     // private
     onRender: function(ct, position){
         if(!this.el){
             this.startDate = new Ext.form.DateField({
                 id: this.id+'-start-date',
+                startDay: 1,
                 format: this.dateFormat,
                 width:100,
                 listeners: {
@@ -54,8 +65,10 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
                     }
                 }
             });
+            
             this.startTime = new Ext.form.TimeField({
                 id: this.id+'-start-time',
+                format: this.timeFormat,
                 hidden: this.showTimes === false,
                 labelWidth: 0,
                 hideLabel:true,
@@ -71,6 +84,7 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
             });
             this.endTime = new Ext.form.TimeField({
                 id: this.id+'-end-time',
+                format: this.timeFormat,
                 hidden: this.showTimes === false,
                 labelWidth: 0,
                 hideLabel:true,
@@ -86,6 +100,7 @@ Ext.ensible.cal.DateRangeField = Ext.extend(Ext.form.Field, {
             })
             this.endDate = new Ext.form.DateField({
                 id: this.id+'-end-date',
+                startDay: this.startDay,
                 format: this.dateFormat,
                 hideLabel:true,
                 width:100,

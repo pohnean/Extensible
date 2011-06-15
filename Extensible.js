@@ -27,16 +27,16 @@
         hasBorderRadius : !(Ext.isIE || Ext.isOpera),
         
         log : function(s){
-            //console.log(s);
+        //            console.log(s);
         },
     
-       /**
-        * @class Ext.ensible.cal.Date
-        * @extends Object
-        * <p>Contains utility date functions used by the calendar components.</p>
-        * @singleton
-        */
-	    Date : {
+        /**
+         * @class Ext.ensible.cal.Date
+         * @extends Object
+         * <p>Contains utility date functions used by the calendar components.</p>
+         * @singleton
+         */
+        Date : {
             /**
              * Determines whether times used throughout all Extensible components should be displayed as
              * 12 hour times with am/pm (default) or 24 hour / military format. Note that some locale files
@@ -57,7 +57,7 @@
              */
             diff : function(start, end, unit){
                 var denom = 1,
-                    diff = end.getTime() - start.getTime();
+                diff = end.getTime() - start.getTime();
                 
                 if(unit == 's'){ 
                     denom = 1000;
@@ -82,9 +82,48 @@
              */
             diffDays : function(start, end){
                 var day = 1000*60*60*24,
-                    diff = end.clearTime(true).getTime() - start.clearTime(true).getTime();
+                diff = end.clearTime(true).getTime() - start.clearTime(true).getTime();
                 
                 return Math.ceil(diff/day);
+            },
+            
+            diffMonths : function(start, end) {
+//                console.log("DIFF_START: " + start);
+//                console.log("DIFF_END: " + end);
+                var diff;
+                diff = (end.getFullYear() - start.getFullYear()) * 12;
+                diff -= start.getMonth() + 1;
+                diff += end.getMonth();
+                
+//                console.log("DIFF MONTHS: " + diff);
+                return diff;
+            },
+    
+//            diffMonths : function(start, end) {
+//                console.log("DIFF_START: " + start);
+//                console.log("DIFF_END: " + end);
+//                
+//                var startYear = start.getFullYear(), startMonth = start.getMonth()+1;
+//                var endYear = end.getFullYear(), endMonth = end.getMonth()+1;
+//                if(startYear < endYear) {
+//                    endMonth += (endYear - startYear) * 12;
+//                }
+//                var diffMonths = endMonth - startMonth;
+//                console.log(startMonth);
+//                console.log(endMonth);
+//                
+//                //                if(start.getDate() > end.getDate()) {
+//                //                    diffMonths--;
+//                //                }
+//        
+//                return diffMonths;
+//            },
+    
+            diffYears : function(start, end) {
+                var startYear = start.getFullYear();
+                var endYear = end.getFullYear();
+        
+                return endYear - startYear;
             },
             
             /**
@@ -126,14 +165,14 @@
                 return d2.getTime() - d1.getTime();
             },
 
-	        // private helper fn
-	        maxOrMin : function(max){
-	            var dt = (max ? 0 : Number.MAX_VALUE), i = 0, args = arguments[1], ln = args.length;
-	            for(; i < ln; i++){
-	                dt = Math[max ? 'max' : 'min'](dt, args[i].getTime());
-	            }
-	            return new Date(dt);
-	        },
+            // private helper fn
+            maxOrMin : function(max){
+                var dt = (max ? 0 : Number.MAX_VALUE), i = 0, args = arguments[1], ln = args.length;
+                for(; i < ln; i++){
+                    dt = Math[max ? 'max' : 'min'](dt, args[i].getTime());
+                }
+                return new Date(dt);
+            },
 	        
             /**
              * Returns the maximum date value passed into the function. Any number of date 
@@ -143,9 +182,9 @@
              * @param {Date} dtN (optional) The Nth date, etc.
              * @return {Date} A new date instance with the latest date value that was passed to the function
              */
-			max : function(){
-	            return this.maxOrMin.apply(this, [true, arguments]);
-	        },
+            max : function(){
+                return this.maxOrMin.apply(this, [true, arguments]);
+            },
 	        
             /**
              * Returns the minimum date value passed into the function. Any number of date 
@@ -155,9 +194,9 @@
              * @param {Date} dtN (optional) The Nth date, etc.
              * @return {Date} A new date instance with the earliest date value that was passed to the function
              */
-			min : function(){
-	            return this.maxOrMin.apply(this, [false, arguments]);
-	        },
+            min : function(){
+                return this.maxOrMin.apply(this, [false, arguments]);
+            },
             
             isInRange : function(dt, rangeStart, rangeEnd) {
                 return  (dt >= rangeStart && dt <= rangeEnd);
@@ -174,8 +213,8 @@
              */
             rangesOverlap : function(start1, end1, start2, end2){
                 var startsInRange = (start1 >= start2 && start1 <= end2),
-                    endsInRange = (end1 >= start2 && end1 <= end2),
-                    spansRange = (start1 <= start2 && end1 >= end2);
+                endsInRange = (end1 >= start2 && end1 <= end2),
+                spansRange = (start1 <= start2 && end1 >= end2);
                 
                 return (startsInRange || endsInRange || spansRange);
             },
@@ -197,6 +236,6 @@
             isWeekday : function(dt){
                 return dt.getDay() % 6 !== 0;
             }
-	    }
+        }
     });
 })();

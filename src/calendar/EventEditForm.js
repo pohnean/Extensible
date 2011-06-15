@@ -35,6 +35,21 @@ autoHeight: true // to allow for the notes field to autogrow
  * @param {Object} config The config object
  */
 Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
+    /**
+     * @cfg {String} dateFormat
+     * The date display format used by the date fields (defaults to 'n/j/Y') 
+     */
+    dateFormat: 'n/j/y',
+    /**
+     * @cfg {String} timeFormat
+     * The time display format used by the time fields (defaults to 'g:i A') 
+     */
+    timeFormat: 'g:i A',
+    /**
+     * @cfg {Number} startDay
+     * The 0-based index for the day on which the calendar week begins (0=Sunday, which is the default)
+     */
+    startDay: 0,
     labelWidth: 65,
     labelWidthRightCol: 65,
     colWidthLeft: .6,
@@ -57,6 +72,7 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
     border: false,
     buttonAlign: 'center',
     autoHeight: true, // to allow for the notes field to autogrow
+    enableFx: true,
     
     /* // not currently supported
      * @cfg {Boolean} enableRecurrence
@@ -114,6 +130,9 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             fieldLabel: this.datesLabelText,
             singleLine: false,
             anchor: '90%',
+            startDay: this.startDay,
+            dateFormat: this.dateFormat,
+            timeFormat: this.timeFormat,
             listeners: {
                 'change': this.onDateChange.createDelegate(this)
             }
@@ -147,7 +166,8 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             this.recurrenceField = new Ext.ensible.cal.RecurrenceField({
                 name: Ext.ensible.cal.EventMappings.RRule.name,
                 fieldLabel: this.repeatsLabelText,
-                anchor: '100%'
+                anchor: '100%',
+                enableFx: this.enableFx
             });
             leftFields.splice(2, 0, this.recurrenceField);
         }

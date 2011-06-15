@@ -20,6 +20,7 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             this.frequencyCombo = new Ext.ensible.cal.RecurrenceCombo({
                 id: this.id+'-frequency',
                 listeners: {
+                    
                     'recurrencechange': {
                         fn: this.showOptions,
                         scope: this
@@ -34,6 +35,8 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
                 cls: 'extensible-recur-inner-ct',
                 items: []
             });
+            this.innerCt.setVisible(false);
+            
             this.fieldCt = new Ext.Container({
                 autoEl: {id:this.id}, //make sure the container el has the field's id
                 cls: 'extensible-recur-ct',
@@ -72,6 +75,7 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
     },
     
     showOptions : function(o){
+        
         var layoutChanged = false, unit = 'day';
         
         if(o != 'NONE'){
@@ -141,6 +145,7 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
     showInnerCt: function(){
         if(!this.innerCt.isVisible()){
             if(this.enableFx && Ext.enableFx){
+                console.log(this.innerCt.getPositionEl());
                 this.innerCt.getPositionEl().slideIn('t', {
                     duration: .3
                 });

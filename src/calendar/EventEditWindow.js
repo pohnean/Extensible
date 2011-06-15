@@ -31,6 +31,21 @@ enableEditDetails: true
  * @param {Object} config The config object
  */
 Ext.ensible.cal.EventEditWindow = Ext.extend(Ext.Window, {
+    /**
+     * @cfg {String} dateFormat
+     * The date display format used by the date fields (defaults to 'n/j/Y') 
+     */
+    dateFormat: 'n/j/y',
+    /**
+     * @cfg {String} timeFormat
+     * The time display format used by the time fields (defaults to 'g:i A') 
+     */
+    timeFormat: 'g:i A',
+    /**
+     * @cfg {Number} startDay
+     * The 0-based index for the day on which the calendar week begins (0=Sunday, which is the default)
+     */
+    startDay: 0,
     titleTextAdd: 'Add Event',
     titleTextEdit: 'Edit Event',
     width: 600,
@@ -129,7 +144,10 @@ Ext.ensible.cal.EventEditWindow = Ext.extend(Ext.Window, {
         });
         this.dateRangeField = new Ext.ensible.cal.DateRangeField({
             anchor: '95%',
-            fieldLabel: this.datesLabelText
+            fieldLabel: this.datesLabelText,
+            startDay: this.startDay,
+            dateFormat: this.dateFormat,
+            timeFormat: this.timeFormat
         });
         
         var items = [this.titleField, this.dateRangeField];
