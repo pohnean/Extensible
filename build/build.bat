@@ -3,7 +3,7 @@
 
 :: Configuration
 set VER=extensible-1.0
-set DEPLOY_ROOT=C:\xampp\htdocs\ceaforms.com\subdomains\www\html\js\extCalendar
+set DEPLOY_ROOT=C:\xampp\htdocs\ceaforms.com\html\js\extCalendar
 set EXTENSIBLE_ROOT=C:\Projects\Extensible
 set EXTENSIBLE_OUTPUT=%EXTENSIBLE_ROOT%\deploy
 

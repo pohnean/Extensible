@@ -125,6 +125,18 @@
         },{
             "text": "RecurringEvent.js",
             "path": "src/calendar/"
+        },{
+            "text": "RRule.js",
+            "path": "src/calendar/recurrence/"
+        },{
+            "text": "Schedule.js",
+            "path": "src/calendar/recurrence/"
+        },{
+            "text": "ScheduledEvent.js",
+            "path": "src/calendar/recurrence/"
+        },{
+            "text": "TemporalExpression.js",
+            "path": "src/calendar/recurrence/"
         }]
     },{
        "name": "Extensible All CSS",
