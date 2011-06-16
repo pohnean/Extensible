@@ -87,37 +87,19 @@
                 return Math.ceil(diff/day);
             },
             
-            diffMonths : function(start, end) {
-//                console.log("DIFF_START: " + start);
-//                console.log("DIFF_END: " + end);
-                var diff;
-                diff = (end.getFullYear() - start.getFullYear()) * 12;
-                diff -= start.getMonth() + 1;
-                diff += end.getMonth();
+            diffWeeks : function(start, end) {
+                var diffDays = this.diffDays(start, end);
                 
-//                console.log("DIFF MONTHS: " + diff);
+                return Math.floor(diffDays / 7)
+            },
+            
+            diffMonths : function(start, end) {
+                var diff;
+                diff = (end.getMonth() - start.getMonth());
+                diff += (end.getFullYear() - start.getFullYear()) * 12;
+                
                 return diff;
             },
-    
-//            diffMonths : function(start, end) {
-//                console.log("DIFF_START: " + start);
-//                console.log("DIFF_END: " + end);
-//                
-//                var startYear = start.getFullYear(), startMonth = start.getMonth()+1;
-//                var endYear = end.getFullYear(), endMonth = end.getMonth()+1;
-//                if(startYear < endYear) {
-//                    endMonth += (endYear - startYear) * 12;
-//                }
-//                var diffMonths = endMonth - startMonth;
-//                console.log(startMonth);
-//                console.log(endMonth);
-//                
-//                //                if(start.getDate() > end.getDate()) {
-//                //                    diffMonths--;
-//                //                }
-//        
-//                return diffMonths;
-//            },
     
             diffYears : function(start, end) {
                 var startYear = start.getFullYear();
