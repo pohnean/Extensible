@@ -17,7 +17,7 @@ Ext.ensible.cal.RecurringEvent = function(rec) {
     
     this.rrules = this.parseRecurRule(this.evt[M.RRule.name]);
     
-    console.log(this.rrules.FREQ);
+    console.log(this.rrules);
 };
 
 Ext.ensible.cal.RecurringEvent.RecurFrequency = {
@@ -56,11 +56,13 @@ Ext.ensible.cal.RecurringEvent.prototype = {
         // clone the original record
         var occurence = this.rec.copy(); 
         
+        
         if (this.rrules.COUNT <= index) {
             return null;
         }
         
         // calculate amount of time to add
+        
         var recurFreq = Ext.ensible.cal.RecurringEvent.RecurFrequency[this.rrules.FREQ];
         var interval = (this.rrules.INTERVAL !== undefined) ? this.rrules.INTERVAL : 1;
         var timespan = interval * recurFreq.factor * index;
@@ -68,15 +70,21 @@ Ext.ensible.cal.RecurringEvent.prototype = {
         occurence.data[M.StartDate.name] = occurence.data[M.StartDate.name].add(recurFreq.type, timespan);
         occurence.data[M.EndDate.name] = occurence.data[M.EndDate.name].add(recurFreq.type, timespan);
         
+        if (this.rrules.BYDAY != null) {
+            var ordinalWeek = this.rrules.BYDAY.substring(0,1);
+            var day = this.rrules.BYDAY.substring(1,3);
+            console.log(ordinalWeek);
+            console.log(day);
+            
+            var firstDayOfMonth = occurence.data[M.StartDate.name].getFirstDayOfMonth();
+        }
+        
         
         occurence.id = occurence.id + "_" + index;
         
         if (this.rrules.UNTIL < occurence.data[M.EndDate.name]) {
             return null;            
         }
-                
-        
-        console.log(occurence.data.StartDate);
         return occurence;
     },
     
@@ -85,47 +93,34 @@ Ext.ensible.cal.RecurringEvent.prototype = {
      * @return {Array} evts an array of event objects for matching occurences.
      */
     findAllOccurences : function(from, to) {
-        var first_index = this.firstVisible(from, to), 
-        last_index = this.lastVisible(from, to), 
-        occurences = [];
+        var last_index = this.lastVisible(from, to), 
+        evtTimespan = this.endDate - this.startDate,
+        M = Ext.ensible.cal.EventMappings,
+        occurences = [];        
         
-        
-        if (first_index !== false && last_index !== false) {
-            // determine index of first visible occurence
-            for (var i = first_index; i <= last_index; i++) {   
+        // search backwards from the last visible until the first visible occurence in view
+        if (last_index !== false) {
+            // if the timespan of the event is more than the range of the view, 
+            // use it as the range to generate recurring events until instead.
+            var searchUntil = new Date();
+            var timeDiff = from -  evtTimespan;
+            searchUntil.setTime(timeDiff);
+                        
+            for (var i = last_index; i > 0; i--) {
                 var occurence = this.findOccurence(i);
                 
                 if (occurence != null) {
-                    occurences.push(occurence);
+                    if (occurence.data[M.StartDate.name] > searchUntil) {
+                        // occurence is visible in current view, add to list
+                        occurences.push(occurence);
+                    } else {
+                        // occurence is out of view range, stop
+                        break;
+                    }
                 }
             }
         }
         return occurences;
-    },
-    
-    /**
-     * Determines the index of the first visible occurence
-     * @param {Date} from the start date
-     * @param {Date} to the end date
-     * @return {Integer} index
-     */
-    firstVisible : function(from, to) {
-        var dayBefore = from.add(Date.MILLI, -1);
-        var n, l = this.lastVisible(null, dayBefore);
-                
-        if (l != false) {
-            n = l + 1;
-        } else {
-            // if original evnt is within current view
-            if (this.startDate > from) {
-                n = 0;
-            } else {
-                // original event is not with current view
-                n = false;
-            }
-        }
-        
-        return n;
     },
     
     /**
@@ -135,7 +130,7 @@ Ext.ensible.cal.RecurringEvent.prototype = {
      * @return {Integer} index
      */
     lastVisible : function(from, to) {
-        var n, diff, offset, startMonth, endMonth;
+        var n, diff;
         var interval = (typeof this.rrules.INTERVAL == 'undefined') ? 1 : this.rrules.INTERVAL; // default is 1
                         
         switch (this.rrules.FREQ) {
@@ -146,8 +141,6 @@ Ext.ensible.cal.RecurringEvent.prototype = {
                 diff = Ext.ensible.Date.diffDays(this.startDate, to) / 7;
                 break;
             case "MONTHLY":
-//                startMonth = this.startDate.getMonth();
-//                endMonth = to.clone().
                 diff = Ext.ensible.Date.diffMonths(this.startDate, to);
                 break;
             case "YEARLY":
@@ -155,20 +148,11 @@ Ext.ensible.cal.RecurringEvent.prototype = {
                 break;
                 
         }
-        
-//        console.log("DIFF: " + diff);
-//        console.log("INTERVAL: " + interval);
-//        console.log("MOD: " + (diff % interval));
-        
-        offset = diff % interval;
         n = Math.floor(diff / interval);
         
         if (n < 0) {
             n = false;
-        }
-            
-//        console.log("offset: " + offset);
-        console.log("n: " + n);               
+        }   
         
         return n;
     },

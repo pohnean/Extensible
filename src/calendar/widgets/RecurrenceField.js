@@ -145,7 +145,6 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
     showInnerCt: function(){
         if(!this.innerCt.isVisible()){
             if(this.enableFx && Ext.enableFx){
-                console.log(this.innerCt.getPositionEl());
                 this.innerCt.getPositionEl().slideIn('t', {
                     duration: .3
                 });
