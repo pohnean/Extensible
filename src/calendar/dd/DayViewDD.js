@@ -213,3 +213,4 @@ Ext.ensible.cal.DayViewDropZone = Ext.extend(Ext.ensible.cal.DropZone, {
         return false;
     }
 });
+

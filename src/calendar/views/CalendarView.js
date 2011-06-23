@@ -600,26 +600,7 @@ viewConfig: {
         var evtsInView = this.store.queryBy(function(rec){
             return this.isEventVisible(rec.data);
         }, this);
-        
-        var recurringEvts = this.store.queryBy(function(rec){
-            return this.isEventRecurring(rec.data);
-        }, this);
                 
-        var occurencesInView = [];
-        
-        if (recurringEvts.getCount() > 0) {
-            
-            recurringEvts.each(function(rec){
-                var recurringEvent = new Ext.ensible.cal.RecurringEvent(rec);
-                                
-                var evtOccurences = recurringEvent.findAllOccurences(this.viewStart, this.viewEnd);
-                
-                occurencesInView = occurencesInView.concat(evtOccurences);
-                
-                evtsInView.addAll(evtOccurences);
-            }, this);
-        }
-        
         for(; w < weeks; w++){
             this.evtMaxCount[w] = 0;
             if(this.weekCount == -1 && dt > lastInMonth){

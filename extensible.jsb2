@@ -122,42 +122,6 @@
         },{
             "text": "CalendarPanel.js",
             "path": "src/calendar/"
-        },{
-            "text": "RecurringEvent.js",
-            "path": "src/calendar/"
-        },{
-            "text": "RRule.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "Schedule.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "ScheduledEvent.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "TemporalExpression.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "DayOfMonthTE.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "DayOfWeekInMonthTE.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "FrequencyTE.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "UnionTE.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "IntersectionTE.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "DateFromTE.js",
-            "path": "src/calendar/recurrence/"
-        },{
-            "text": "DateUntilTE.js",
-            "path": "src/calendar/recurrence/"
         }]
     },{
        "name": "Extensible All CSS",

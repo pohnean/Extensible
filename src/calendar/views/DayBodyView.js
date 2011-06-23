@@ -149,7 +149,7 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
         
         // default scroll position to scrollStartHour (7am by default) or min view hour if later
         var startHour = Math.max(this.scrollStartHour, this.viewStartHour),
-            scrollStart = Math.max(0, startHour - this.viewStartHour);
+        scrollStart = Math.max(0, startHour - this.viewStartHour);
             
         if(scrollStart > 0){
             this.scrollTo(scrollStart * this.hourHeight);
@@ -163,8 +163,8 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
     onEventResize : function(rec, data){
         if(this.fireEvent('beforeeventresize', this, rec, data) !== false){
             var D = Ext.ensible.Date,
-                start = Ext.ensible.cal.EventMappings.StartDate.name,
-                end = Ext.ensible.cal.EventMappings.EndDate.name;
+            start = Ext.ensible.cal.EventMappings.StartDate.name,
+            end = Ext.ensible.cal.EventMappings.EndDate.name;
                 
             if(D.compare(rec.data[start], data.StartDate) === 0 &&
                 D.compare(rec.data[end], data.EndDate) === 0){
@@ -183,18 +183,18 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
     getEventBodyMarkup : function(){
         if(!this.eventBodyMarkup){
             this.eventBodyMarkup = ['{Title}',
-                '<tpl if="_isReminder">',
-                    '<i class="ext-cal-ic ext-cal-ic-rem">&#160;</i>',
-                '</tpl>',
-                '<tpl if="_isRecurring">',
-                    '<i class="ext-cal-ic ext-cal-ic-rcr">&#160;</i>',
-                '</tpl>'
-//                '<tpl if="spanLeft">',
-//                    '<i class="ext-cal-spl">&#160;</i>',
-//                '</tpl>',
-//                '<tpl if="spanRight">',
-//                    '<i class="ext-cal-spr">&#160;</i>',
-//                '</tpl>'
+            '<tpl if="_isReminder">',
+            '<i class="ext-cal-ic ext-cal-ic-rem">&#160;</i>',
+            '</tpl>',
+            '<tpl if="_isRecurring">',
+            '<i class="ext-cal-ic ext-cal-ic-rcr">&#160;</i>',
+            '</tpl>'
+            //                '<tpl if="spanLeft">',
+            //                    '<i class="ext-cal-spl">&#160;</i>',
+            //                '</tpl>',
+            //                '<tpl if="spanRight">',
+            //                    '<i class="ext-cal-spr">&#160;</i>',
+            //                '</tpl>'
             ].join('');
         }
         return this.eventBodyMarkup;
@@ -204,23 +204,23 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
     getEventTemplate : function(){
         if(!this.eventTpl){
             this.eventTpl = !(Ext.isIE || Ext.isOpera) ? 
-                new Ext.XTemplate(
-                    '<div id="{_elId}" class="{_extraCls} ext-cal-evt ext-cal-evr" style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
-                        '<div class="ext-evt-bd">', this.getEventBodyMarkup(), '</div>',
-                        this.enableEventResize ? '<div class="ext-evt-rsz"><div class="ext-evt-rsz-h">&#160;</div></div>' : '',
-                    '</div>'
+            new Ext.XTemplate(
+                '<div id="{_elId}" class="{_extraCls} ext-cal-evt ext-cal-evr" style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
+                '<div class="ext-evt-bd">', this.getEventBodyMarkup(), '</div>',
+                this.enableEventResize ? '<div class="ext-evt-rsz"><div class="ext-evt-rsz-h">&#160;</div></div>' : '',
+                '</div>'
                 )
-                : new Ext.XTemplate(
-                    '<div id="{_elId}" class="ext-cal-evt {_extraCls}" style="left: {_left}%; width: {_width}%; top: {_top}px;">',
-                        '<div class="ext-cal-evb">&#160;</div>',
-                        '<dl style="height: {_height}px;" class="ext-cal-evdm">',
-                            '<dd class="ext-evt-bd">',
-                                this.getEventBodyMarkup(),
-                            '</dd>',
-                            this.enableEventResize ? '<div class="ext-evt-rsz"><div class="ext-evt-rsz-h">&#160;</div></div>' : '',
-                        '</dl>',
-                        '<div class="ext-cal-evb">&#160;</div>',
-                    '</div>'
+            : new Ext.XTemplate(
+                '<div id="{_elId}" class="ext-cal-evt {_extraCls}" style="left: {_left}%; width: {_width}%; top: {_top}px;">',
+                '<div class="ext-cal-evb">&#160;</div>',
+                '<dl style="height: {_height}px;" class="ext-cal-evdm">',
+                '<dd class="ext-evt-bd">',
+                this.getEventBodyMarkup(),
+                '</dd>',
+                this.enableEventResize ? '<div class="ext-evt-rsz"><div class="ext-evt-rsz-h">&#160;</div></div>' : '',
+                '</dl>',
+                '<div class="ext-cal-evb">&#160;</div>',
+                '</div>'
                 );
             this.eventTpl.compile();
         }
@@ -243,20 +243,20 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
             var tpl, body = this.getEventBodyMarkup();
             
             tpl = !(Ext.isIE || Ext.isOpera) ? 
-                new Ext.XTemplate(
-                    '<div class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evr" style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
-                        body,
-                    '</div>'
+            new Ext.XTemplate(
+                '<div class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evr" style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
+                body,
+                '</div>'
                 ) 
-                : new Ext.XTemplate(
-                    '<div class="ext-cal-evt" style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
-                    '<div class="{_extraCls} {spanCls} ext-cal-evo">',
-                        '<div class="ext-cal-evm">',
-                            '<div class="ext-cal-evi">',
-                                body,
-                            '</div>',
-                        '</div>',
-                    '</div></div>'
+            : new Ext.XTemplate(
+                '<div class="ext-cal-evt" style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
+                '<div class="{_extraCls} {spanCls} ext-cal-evo">',
+                '<div class="ext-cal-evm">',
+                '<div class="ext-cal-evi">',
+                body,
+                '</div>',
+                '</div>',
+                '</div></div>'
                 );
             tpl.compile();
             this.eventAllDayTpl = tpl;
@@ -267,12 +267,12 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
     // private
     getTemplateEventData : function(evt){
         var M = Ext.ensible.cal.EventMappings,
-            extraClasses = [this.getEventSelectorCls(evt[M.EventId.name])],
-            data = {},
-            colorCls = 'x-cal-default',
-            title = evt[M.Title.name],
-            fmt = Ext.ensible.Date.use24HourTime ? 'G:i ' : 'g:ia ',
-            recurring = evt[M.RRule.name] != '';
+        extraClasses = [this.getEventSelectorCls(evt[M.EventId.name])],
+        data = {},
+        colorCls = 'x-cal-default',
+        title = evt[M.Title.name],
+        fmt = Ext.ensible.Date.use24HourTime ? 'G:i ' : 'g:ia ',
+        recurring = evt[M.RRule.name] != '';
         
         this.getTemplateEventBox(evt);
         
@@ -287,7 +287,7 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
         
         if(this.getEventClass){
             var rec = this.getEventRecord(evt[M.EventId.name]),
-                cls = this.getEventClass(rec, !!evt._renderAsAllDay, data, this.store);
+            cls = this.getEventClass(rec, !!evt._renderAsAllDay, data, this.store);
             extraClasses.push(cls);
         }
         
@@ -310,14 +310,14 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
     // private
     getTemplateEventBox : function(evt){
         var heightFactor = this.hourHeight / this.hourIncrement,
-            start = evt[Ext.ensible.cal.EventMappings.StartDate.name],
-            end = evt[Ext.ensible.cal.EventMappings.EndDate.name],
-            startOffset = Math.max(start.getHours() - this.viewStartHour, 0),
-            endOffset = Math.min(end.getHours() - this.viewStartHour, this.viewEndHour - this.viewStartHour),
-            startMins = startOffset * this.hourIncrement,
-            endMins = endOffset * this.hourIncrement,
-            viewEndDt = end.clearTime(true).add(Date.HOUR, this.viewEndHour),
-            evtOffsets = this.getEventPositionOffsets();
+        start = evt[Ext.ensible.cal.EventMappings.StartDate.name],
+        end = evt[Ext.ensible.cal.EventMappings.EndDate.name],
+        startOffset = Math.max(start.getHours() - this.viewStartHour, 0),
+        endOffset = Math.min(end.getHours() - this.viewStartHour, this.viewEndHour - this.viewStartHour),
+        startMins = startOffset * this.hourIncrement,
+        endMins = endOffset * this.hourIncrement,
+        viewEndDt = end.clearTime(true).add(Date.HOUR, this.viewEndHour),
+        evtOffsets = this.getEventPositionOffsets();
             
         if(start.getHours() >= this.viewStartHour){
             // only add the minutes if the start is visible, otherwise it offsets the event incorrectly
@@ -339,9 +339,9 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
         var day = 0, evts = [];
         for(; day < this.dayCount; day++){
             var ev = emptyCells = skipped = 0, 
-                d = this.eventGrid[0][day],
-                ct = d ? d.length : 0, 
-                evt;
+            d = this.eventGrid[0][day],
+            ct = d ? d.length : 0, 
+            evt;
             
             for(; ev < ct; ev++){
                 evt = d[ev];
@@ -349,10 +349,10 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
                     continue;
                 }
                 var item = evt.data || evt.event.data,
-                    M = Ext.ensible.cal.EventMappings,
-                    ad = item[M.IsAllDay.name] === true,
-                    span = Ext.ensible.Date.diffDays(item[M.StartDate.name], item[M.EndDate.name]) > 0,
-                    renderAsAllDay = ad || span;
+                M = Ext.ensible.cal.EventMappings,
+                ad = item[M.IsAllDay.name] === true,
+                span = Ext.ensible.Date.diffDays(item[M.StartDate.name], item[M.EndDate.name]) > 0,
+                renderAsAllDay = ad || span;
                          
                 if(renderAsAllDay){
                     // this event is already rendered in the header view
@@ -373,8 +373,8 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
         var i = j = 0, overlapCols = [], l = evts.length, prevDt;
         for(; i<l; i++){
             var evt = evts[i].data, 
-                evt2 = null, 
-                dt = evt[Ext.ensible.cal.EventMappings.StartDate.name].getDate();
+            evt2 = null, 
+            dt = evt[Ext.ensible.cal.EventMappings.StartDate.name].getDate();
             
             for(j=0; j<l; j++){
                 if(i==j)continue;
@@ -395,17 +395,17 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
         // rendering loop
         for(i=0; i<l; i++){
             var evt = evts[i].data,
-                dt = evt[Ext.ensible.cal.EventMappings.StartDate.name].getDate();
+            dt = evt[Ext.ensible.cal.EventMappings.StartDate.name].getDate();
                 
             if(evt._overlap !== undefined){
                 var colWidth = 100 / (overlapCols[dt]+1),
-                    evtWidth = 100 - (colWidth * evt._overlap);
+                evtWidth = 100 - (colWidth * evt._overlap);
                     
                 evt._width = colWidth;
                 evt._left = colWidth * evt._overcol;
             }
             var markup = this.getEventTemplate().apply(evt),
-                target = this.id+'-day-col-'+evts[i].date.format('Ymd');
+            target = this.id+'-day-col-'+evts[i].date.format('Ymd');
                 
             Ext.DomHelper.append(target, markup);
         }
@@ -429,26 +429,29 @@ Ext.ensible.cal.DayBodyView = Ext.extend(Ext.ensible.cal.CalendarView, {
     // private
     getDaySize : function(){
         var box = this.el.child('.ext-cal-day-col-inner').getBox();
-        return {height: box.height, width: box.width};
+        return {
+            height: box.height, 
+            width: box.width
+            };
     },
     
     // private
     getDayAt : function(x, y){
         var sel = '.ext-cal-body-ct',
-            xoffset = this.el.child('.ext-cal-day-times').getWidth(),
-            viewBox = this.el.getBox(),
-            daySize = this.getDaySize(false),
-            relX = x - viewBox.x - xoffset,
-            dayIndex = Math.floor(relX / daySize.width), // clicked col index
-            scroll = this.el.getScroll(),
-            row = this.el.child('.ext-cal-bg-row'), // first avail row, just to calc size
-            rowH = row.getHeight() / this.incrementsPerHour,
-            relY = y - viewBox.y - rowH + scroll.top,
-            rowIndex = Math.max(0, Math.ceil(relY / rowH)),
-            mins = rowIndex * (this.hourIncrement / this.incrementsPerHour),
-            dt = this.viewStart.add(Date.DAY, dayIndex).add(Date.MINUTE, mins).add(Date.HOUR, this.viewStartHour),
-            el = this.getDayEl(dt),
-            timeX = x;
+        xoffset = this.el.child('.ext-cal-day-times').getWidth(),
+        viewBox = this.el.getBox(),
+        daySize = this.getDaySize(false),
+        relX = x - viewBox.x - xoffset,
+        dayIndex = Math.floor(relX / daySize.width), // clicked col index
+        scroll = this.el.getScroll(),
+        row = this.el.child('.ext-cal-bg-row'), // first avail row, just to calc size
+        rowH = row.getHeight() / this.incrementsPerHour,
+        relY = y - viewBox.y - rowH + scroll.top,
+        rowIndex = Math.max(0, Math.ceil(relY / rowH)),
+        mins = rowIndex * (this.hourIncrement / this.incrementsPerHour),
+        dt = this.viewStart.add(Date.DAY, dayIndex).add(Date.MINUTE, mins).add(Date.HOUR, this.viewStartHour),
+        el = this.getDayEl(dt),
+        timeX = x;
         
         if(el){
             timeX = el.getLeft();

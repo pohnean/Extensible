@@ -254,4 +254,3 @@ Ext.ensible.cal.DropZone = Ext.extend(Ext.dd.DropZone, {
         return false;
     }
 });
-

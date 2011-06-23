@@ -1,3 +1,9 @@
+/*!
+ * Extensible 1.0
+ * Copyright(c) 2010-2011 Extensible, LLC
+ * licensing@ext.ensible.com
+ * http://ext.ensible.com
+ */
 /**
  * @class Ext.ensible
  * Extensible core utilities and functions.

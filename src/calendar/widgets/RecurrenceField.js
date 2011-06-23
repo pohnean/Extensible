@@ -1,3 +1,9 @@
+/*!
+ * Extensible 1.0
+ * Copyright(c) 2010-2011 Extensible, LLC
+ * licensing@ext.ensible.com
+ * http://ext.ensible.com
+ */
 /* @private
  * Currently not used
  * Rrule info: http://www.kanzaki.com/docs/ical/rrule.html
@@ -20,7 +26,6 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             this.frequencyCombo = new Ext.ensible.cal.RecurrenceCombo({
                 id: this.id+'-frequency',
                 listeners: {
-                    
                     'recurrencechange': {
                         fn: this.showOptions,
                         scope: this
@@ -35,10 +40,10 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
                 cls: 'extensible-recur-inner-ct',
                 items: []
             });
-            this.innerCt.setVisible(false);
-            
             this.fieldCt = new Ext.Container({
-                autoEl: {id:this.id}, //make sure the container el has the field's id
+                autoEl: {
+                    id:this.id
+                }, //make sure the container el has the field's id
                 cls: 'extensible-recur-ct',
                 renderTo: ct,
                 items: [this.frequencyCombo, this.innerCt]
@@ -53,10 +58,10 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
         Ext.ensible.cal.RecurrenceField.superclass.onRender.call(this, ct, position);
     },
     
-//    afterRender : function(){
-//        Ext.ensible.cal.RecurrenceField.superclass.afterRender.call(this);
-//        this.setStartDate(this.startDate);
-//    },
+    //    afterRender : function(){
+    //        Ext.ensible.cal.RecurrenceField.superclass.afterRender.call(this);
+    //        this.setStartDate(this.startDate);
+    //    },
     
     // private
     initValue : function(){
@@ -75,7 +80,6 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
     },
     
     showOptions : function(o){
-        
         var layoutChanged = false, unit = 'day';
         
         if(o != 'NONE'){
@@ -203,17 +207,68 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             return this;
         }
         var parts = v.split(';');
+               
+        
         this.items.each(function(p){
             p.setValue(parts);
         });
-        Ext.each(parts, function(p){
-            if(p.indexOf('FREQ') > -1){
-                var freq = p.split('=')[1];
-                this.frequencyCombo.setValue(freq);
-                this.showOptions(freq);
-                return;
+        
+        var rrule = {}, rule, cond, params, nthDayNum, nthDay, byDay, byMonthDay, interval;
+        for (var i in parts) {            
+            if (typeof(parts[i]) == 'string' && parts[i].indexOf('=') > -1) {
+                rule = parts[i].split('=');
+                cond = rule[0];
+                params = rule[1];
+                
+                if (params.indexOf(',') > -1) {
+                    params = params.split(',');
+                }   
+                
+                rrule[cond] = params;
             }
-        }, this);
+        }
+        
+        if (rrule["FREQ"] != null) {
+            var cbo;
+            this.frequencyCombo.setValue(rrule["FREQ"]);
+            this.showOptions(rrule["FREQ"]);
+            
+            if (rrule["FREQ"] == 'MONTHLY') {
+                cbo = Ext.getCmp(this.monthly.id+'-combo');
+                
+                if (rrule["BYDAY"] != null) {
+                    nthDayNum = parseInt(rrule["BYDAY"].substr(0, 1));
+                    nthDay = this.parseByDay(rrule["BYDAY"].substr(1, 2));
+                    byDay = nthDayNum + this.getSuffix(nthDayNum) + " " + nthDay;
+                    
+                    cbo.setValue(byDay);
+                } else if (rrule["BYMONTHDAY"] != null) {
+                    nthDayNum = parseInt(rrule["BYMONTHDAY"]);
+                    byMonthDay = nthDayNum + this.getSuffix(nthDayNum) + " day";
+                    
+                    cbo.setValue(byMonthDay);
+                }                
+            }
+            
+            if (rrule["FREQ"] == 'YEARLY') {
+                cbo = Ext.getCmp(this.yearly.id+'-combo');
+                
+                if (rrule["BYDAY"] != null) {
+                    nthDayNum = parseInt(rrule["BYDAY"].substr(0, 1));
+                    nthDay = this.parseByDay(rrule["BYDAY"].substr(1, 2));
+                    byDay = nthDayNum + this.getSuffix(nthDayNum) + " " + nthDay + " in " + Date.monthNames[this.startDate.getMonth()];
+                    
+                    cbo.setValue(byDay);
+                }
+            }
+        }
+        
+        if (rrule["INTERVAL"] != null)  {
+            interval = parseInt(rrule["INTERVAL"]);
+            Ext.getCmp(this.repeatEvery.id+'-num').setValue(interval);
+        } else {
+            Ext.getCmp(this.repeatEvery.id+'-num').setValue(1);
+        }
         
         return this;
     },
@@ -224,14 +279,56 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
         });
     },
     
+    parseByDay : function(byday) {
+        switch (byday) {
+            case "MO":
+                return "Monday";
+            case "TU":
+                return "Tuesday";
+            case "WE":
+                return "Wednesday";
+            case "TH":
+                return "Thursday";
+            case "FR":
+                return "Friday";
+            case "SA":
+                return "Saturday";
+            case "SU":
+                return "Sunday";
+        }
+    },
+    
+
+    //TODO: This is not I18N-able:
+    getSuffix : function(n){
+        if(!Ext.isNumber(n)){
+            return '';
+        }
+        switch (n) {
+            case 1:
+            case 21:
+            case 31:
+                return "st";
+            case 2:
+            case 22:
+                return "nd";
+            case 3:
+            case 23:
+                return "rd";
+            default:
+                return "th";
+        }
+    },
+    
     initSubComponents : function(){
         Ext.ensible.cal.recurrenceBase = Ext.extend(Ext.Container, {
             fieldLabel: ' ',
             labelSeparator: '',
-            hideLabel: true,
             layout: 'table',
             anchor: '100%',
             startDate: this.startDate,
+            parsed : {},            
+            
 
             //TODO: This is not I18N-able:
             getSuffix : function(n){
@@ -257,14 +354,14 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             //shared by monthly and yearly components:
             initNthCombo: function(cbo){
                 var cbo = Ext.getCmp(this.id+'-combo'),
-                    dt = this.startDate,
-                    store = cbo.getStore(),
-                    last = dt.getLastDateOfMonth().getDate(),
-                    dayNum = dt.getDate(),
-                    nthDate = dt.format('jS') + ' day',
-                    isYearly = this.id.indexOf('-yearly') > -1,
-                    yearlyText = ' in ' + dt.format('F'),
-                    nthDayNum, nthDay, lastDay, lastDate, idx, data, s;
+                dt = this.startDate,
+                store = cbo.getStore(),
+                last = dt.getLastDateOfMonth().getDate(),
+                dayNum = dt.getDate(),
+                nthDate = dt.format('jS') + ' day',
+                isYearly = this.id.indexOf('-yearly') > -1,
+                yearlyText = ' in ' + dt.format('F'),
+                nthDayNum, nthDay, lastDay, lastDate, idx, data, s;
                     
                 nthDayNum = Math.ceil(dayNum / 7);
                 nthDay = nthDayNum + this.getSuffix(nthDayNum) + dt.format(' l');
@@ -290,6 +387,7 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
                 if(idx > data.length-1){
                     idx = data.length-1;
                 }
+                
                 cbo.setValue(store.getAt(idx > -1 ? idx : 0).data.field1);
                 return this;
             },
@@ -336,7 +434,7 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             },
             setValue : function(v){
                 var set = false, 
-                    parts = Ext.isArray(v) ? v : v.split(';');
+                parts = Ext.isArray(v) ? v : v.split(';');
                 
                 Ext.each(parts, function(p){
                     if(p.indexOf('INTERVAL') > -1){
@@ -375,13 +473,47 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
                 xtype: 'checkboxgroup',
                 id: this.id+'-weekly-days',
                 items: [
-                    {boxLabel: 'Sun', name: 'SU', id: this.id+'-weekly-SU'},
-                    {boxLabel: 'Mon', name: 'MO', id: this.id+'-weekly-MO'},
-                    {boxLabel: 'Tue', name: 'TU', id: this.id+'-weekly-TU'},
-                    {boxLabel: 'Wed', name: 'WE', id: this.id+'-weekly-WE'},
-                    {boxLabel: 'Thu', name: 'TH', id: this.id+'-weekly-TH'},
-                    {boxLabel: 'Fri', name: 'FR', id: this.id+'-weekly-FR'},
-                    {boxLabel: 'Sat', name: 'SA', id: this.id+'-weekly-SA'}
+                {
+                    boxLabel: 'Mon', 
+                    name: 'MO', 
+                    id: this.id+'-weekly-MO'
+                },
+
+                {
+                    boxLabel: 'Tue', 
+                    name: 'TU', 
+                    id: this.id+'-weekly-TU'
+                },
+
+                {
+                    boxLabel: 'Wed', 
+                    name: 'WE', 
+                    id: this.id+'-weekly-WE'
+                },
+
+                {
+                    boxLabel: 'Thu', 
+                    name: 'TH', 
+                    id: this.id+'-weekly-TH'
+                },
+
+                {
+                    boxLabel: 'Fri', 
+                    name: 'FR', 
+                    id: this.id+'-weekly-FR'
+                },
+
+                {
+                    boxLabel: 'Sat', 
+                    name: 'SA', 
+                    id: this.id+'-weekly-SA'
+                },
+
+                {
+                    boxLabel: 'Sun', 
+                    name: 'SU', 
+                    id: this.id+'-weekly-SU'
+                }
                 ]
             }],
             setStartDate: function(dt){
@@ -410,14 +542,14 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             },
             setValue : function(v){
                 var set = false, 
-                    parts = Ext.isArray(v) ? v : v.split(';');
+                parts = Ext.isArray(v) ? v : v.split(';');
                 
                 this.clearValue();
                 
                 Ext.each(parts, function(p){
                     if(p.indexOf('BYDAY') > -1){
                         var days = p.split('=')[1].split(','),
-                            vals = {};
+                        vals = {};
                             
                         Ext.each(days, function(d){
                             vals[d] = true;
@@ -462,17 +594,21 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             },
             getValue: function(){
                 var cbo = Ext.getCmp(this.id+'-combo'),
-                    store = cbo.getStore(),
-                    idx = store.find('field1', cbo.getValue()),
-                    dt = this.startDate,
-                    day = dt.format('D').substring(0,2).toUpperCase();
+                store = cbo.getStore(),
+                idx = store.find('field1', cbo.getValue()),
+                dt = this.startDate,
+                day = dt.format('D').substring(0,2).toUpperCase();
                 
                 if (idx > -1) {
                     switch(idx){
-                        case 0:  return ';BYMONTHDAY='+dt.format('j');
-                        case 1:  return ';BYDAY='+cbo.getValue()[0].substring(0,1)+day;
-                        case 2:  return ';BYDAY=-1'+day;
-                        default: return ';BYMONTHDAY=-1';
+                        case 0:
+                            return ';BYMONTHDAY='+dt.format('j');
+                        case 1:
+                            return ';BYDAY='+cbo.getValue()[0].substring(0,1)+day;
+                        case 2:
+                            return ';BYDAY=-1'+day;
+                        default:
+                            return ';BYMONTHDAY=-1';
                     }
                 }
                 return '';
@@ -506,18 +642,22 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             },
             getValue: function(){
                 var cbo = Ext.getCmp(this.id+'-combo'),
-                    store = cbo.getStore(),
-                    idx = store.find('field1', cbo.getValue()),
-                    dt = this.startDate,
-                    day = dt.format('D').substring(0,2).toUpperCase(),
-                    byMonth = ';BYMONTH='+dt.format('n');
+                store = cbo.getStore(),
+                idx = store.find('field1', cbo.getValue()),
+                dt = this.startDate,
+                day = dt.format('D').substring(0,2).toUpperCase(),
+                byMonth = ';BYMONTH='+dt.format('n');
                 
                 if(idx > -1){
                     switch(idx){
-                        case 0:  return byMonth;
-                        case 1:  return byMonth+';BYDAY='+cbo.getValue()[0].substring(0,1)+day;
-                        case 2:  return byMonth+';BYDAY=-1'+day;
-                        default: return byMonth+';BYMONTHDAY=-1';
+                        case 0:
+                            return byMonth;
+                        case 1:
+                            return byMonth+';BYDAY='+cbo.getValue()[0].substring(0,1)+day;
+                        case 2:
+                            return byMonth+';BYDAY=-1'+day;
+                        default:
+                            return byMonth+';BYMONTHDAY=-1';
                     }
                 }
                 return '';
@@ -605,7 +745,7 @@ Ext.ensible.cal.RecurrenceField = Ext.extend(Ext.form.Field, {
             },
             setValue : function(v){
                 var set = false, 
-                    parts = Ext.isArray(v) ? v : v.split(';');
+                parts = Ext.isArray(v) ? v : v.split(';');
                 
                 Ext.each(parts, function(p){
                     if(p.indexOf('COUNT') > -1){

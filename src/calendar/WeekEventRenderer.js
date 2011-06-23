@@ -78,7 +78,7 @@ Ext.ensible.cal.WeekEventRenderer = function(){
                                         cls: 'ext-cal-ev',
                                         cn : eventTpl.apply(o.templateDataFn(item))
                                     },
-                                    diff = Ext.ensible.Date.diffDays(dt, item[Ext.ensible.cal.EventMappings.EndDate.name]) + 1,
+                                    diff = Ext.ensible.Date.diffDays(dt, item[Ext.ensible.cal.EventMappings.EndDate.name].add(Date.MILLI, -1)) + 1,
                                     cspan = Math.min(diff, dayCount-d);
                                                                         
                                 if(cspan > 1){
