@@ -61,7 +61,7 @@ Ext.ensible.cal.EventEditWindow = Ext.extend(Ext.Window, {
     saveButtonText: 'Save',
     deleteButtonText: 'Delete',
     cancelButtonText: 'Cancel',
-    titleLabelText: 'Title',
+    titleLabelText: 'What',
     datesLabelText: 'When',
     calendarLabelText: 'Calendar',
     editDetailsLinkClass: 'edit-dtl-link',

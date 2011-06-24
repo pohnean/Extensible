@@ -171,6 +171,11 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
      * the default calendar (and color).
      */
     /**
+     * @cfg {Ext.data.Store} contactStore
+     * The {@link Ext.data.Store store} which is bound to this calendar and contains {@link Ext.ensible.cal.ContactRecord ContactRecords}.
+     * This is an optional store that provides options for selecting contacts from a combobox.
+     */
+    /**
      * @cfg {Object} viewConfig
      * A config object that will be applied to all {@link Ext.ensible.cal.CalendarView views} managed by this CalendarPanel. Any
      * options on this object that do not apply to any particular view will simply be ignored.
@@ -548,6 +553,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
             enableRecurrence: this.enableRecurrence,
             store: this.store,
             calendarStore: this.calendarStore,
+            contactStore: this.contactStore,
             editModal: this.editModal,
             enableEditDetails: this.enableEditDetails,
             ownerCalendarPanel: this
@@ -621,6 +627,7 @@ Ext.ensible.cal.CalendarPanel = Ext.extend(Ext.Panel, {
             xtype: 'extensible.eventeditform',
             id: this.id+'-edit',
             calendarStore: this.calendarStore,
+            contactStore: this.contactStore,
             enableRecurrence: this.enableRecurrence,
             dateFormat: this.dateFormat,
             timeFormat: this.timeFormat,

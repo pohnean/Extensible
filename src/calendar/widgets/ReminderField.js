@@ -28,9 +28,9 @@ Ext.ensible.cal.ReminderField = Ext.extend(Ext.form.ComboBox, {
     forceSelection: true,
     displayField: 'desc',
     valueField: 'value',
-    noneText: 'None',
+    noneText: 'No Reminder',
     atStartTimeText: 'At start time',
-    reminderValueFormat: '{0} {1} before start',
+    reminderValueFormat: '{0} {1} before',
     
     // the following are all deprecated in favor of the corresponding get* template methods.
     // they are still here only for backwards-compatibility and will be removed in a future release.
@@ -60,8 +60,8 @@ Ext.ensible.cal.ReminderField = Ext.extend(Ext.form.ComboBox, {
             ['5', stringFormat(fmt, '5', me.getMinutesText(5))],
             ['15', stringFormat(fmt, '15', me.getMinutesText(15))],
             ['30', stringFormat(fmt, '30', me.getMinutesText(30))],
+            ['45', stringFormat(fmt, '45', me.getMinutesText(30))],
             ['60', stringFormat(fmt, '1', me.getHoursText(1))],
-            ['90', stringFormat(fmt, '1.5', me.getHoursText(1.5))],
             ['120', stringFormat(fmt, '2', me.getHoursText(2))],
             ['180', stringFormat(fmt, '3', me.getHoursText(3))],
             ['360', stringFormat(fmt, '6', me.getHoursText(6))],

@@ -51,14 +51,26 @@
             "text": "CalendarMappings.js",
             "path": "src/calendar/data/"
         },{
+            "text": "ContactMappings.js",
+            "path": "src/calendar/data/"
+        },{
             "text": "EventRecord.js",
             "path": "src/calendar/data/"
         },{
             "text": "CalendarRecord.js",
             "path": "src/calendar/data/"
         },{
+            "text": "ContactRecord.js",
+            "path": "src/calendar/data/"
+        },{
             "text": "WeekEventRenderer.js",
             "path": "src/calendar/"
+        },{
+            "text":"ContactCombo.js",
+            "path":"src/calendar/widgets/"
+        },{
+            "text":"TypeCombo.js",
+            "path":"src/calendar/widgets/"
         },{
             "text":"CalendarCombo.js",
             "path":"src/calendar/widgets/"

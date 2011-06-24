@@ -57,13 +57,14 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
     title: 'Event Form',
     titleTextAdd: 'Add Event',
     titleTextEdit: 'Edit Event',
-    titleLabelText: 'Title',
+    titleLabelText: 'What',
     datesLabelText: 'When',
     reminderLabelText: 'Reminder',
     notesLabelText: 'Notes',
-    locationLabelText: 'Location',
+    locationLabelText: 'Where',
     webLinkLabelText: 'Web Link',
     calendarLabelText: 'Calendar',
+    contactsLabelText: 'Contacts',
     repeatsLabelText: 'Repeats',
     saveButtonText: 'Save',
     deleteButtonText: 'Delete',
@@ -126,6 +127,12 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             name: Ext.ensible.cal.EventMappings.Title.name,
             anchor: '90%'
         });
+        
+        this.locationField = new Ext.form.TextField({
+            fieldLabel: this.locationLabelText,
+            name: Ext.ensible.cal.EventMappings.Location.name,
+            anchor: '90%'
+        });
         this.dateRangeField = new Ext.ensible.cal.DateRangeField({
             fieldLabel: this.datesLabelText,
             singleLine: false,
@@ -141,6 +148,8 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             name: Ext.ensible.cal.EventMappings.Reminder.name,
             fieldLabel: this.reminderLabelText
         });
+       
+        
         this.notesField = new Ext.form.TextArea({
             fieldLabel: this.notesLabelText,
             name: Ext.ensible.cal.EventMappings.Notes.name,
@@ -148,20 +157,34 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             growMax: 150,
             anchor: '100%'
         });
-        this.locationField = new Ext.form.TextField({
-            fieldLabel: this.locationLabelText,
-            name: Ext.ensible.cal.EventMappings.Location.name,
-            anchor: '100%'
-        });
         this.urlField = new Ext.form.TextField({
             fieldLabel: this.webLinkLabelText,
             name: Ext.ensible.cal.EventMappings.Url.name,
             anchor: '100%'
         });
+        this.colorField = new Ext.ensible.cal.ColorPalette({
+            fieldLabel: "Color"
+        });
+        this.typeField = new Ext.ensible.cal.TypeCombo({
+            fieldLabel: 'Type',
+            name: Ext.ensible.cal.EventMappings.Type.name
+        });        
         
-        var leftFields = [this.titleField, this.dateRangeField, this.reminderField], 
-            rightFields = [this.notesField, this.locationField, this.urlField];
-            
+        var leftFields = [this.titleField, this.locationField, this.dateRangeField, this.reminderField], 
+        rightFields = [this.typeField, this.notesField];
+        
+        this.contactStore.load();
+        if (this.contactStore) {
+            this.contactsField = new Ext.ensible.cal.ContactCombo({
+                store: this.contactStore,
+                fieldLabel: this.contactsLabelText,
+                name: Ext.ensible.cal.EventMappings.ContactId.name
+            });
+            rightFields.splice(1, 0, this.contactsField);
+        }
+        
+        
+                    
         if(this.enableRecurrence){
             this.recurrenceField = new Ext.ensible.cal.RecurrenceField({
                 name: Ext.ensible.cal.EventMappings.RRule.name,
@@ -169,9 +192,10 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
                 anchor: '100%',
                 enableFx: this.enableFx
             });
-            leftFields.splice(2, 0, this.recurrenceField);
+            leftFields.splice(3, 0, this.recurrenceField);
         }
         
+                
         if(this.calendarStore){
             this.calendarField = new Ext.ensible.cal.CalendarCombo({
                 store: this.calendarStore,
@@ -197,11 +221,18 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
         }];
         
         this.fbar = [{
-            text:this.saveButtonText, scope: this, handler: this.onSave
+            text:this.saveButtonText, 
+            scope: this, 
+            handler: this.onSave
         },{
-            cls:'ext-del-btn', text:this.deleteButtonText, scope:this, handler:this.onDelete
+            cls:'ext-del-btn', 
+            text:this.deleteButtonText, 
+            scope:this, 
+            handler:this.onDelete
         },{
-            text:this.cancelButtonText, scope: this, handler: this.onCancel
+            text:this.cancelButtonText, 
+            scope: this, 
+            handler: this.onCancel
         }];
         
         Ext.ensible.cal.EventEditForm.superclass.initComponent.call(this);
@@ -225,7 +256,14 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             this.recurrenceField.setValue(rec.data[Ext.ensible.cal.EventMappings.RRule.name]);
         }
         if(this.calendarStore){
-            this.form.setValues({'calendar': rec.data[Ext.ensible.cal.EventMappings.CalendarId.name]});
+            this.form.setValues({
+                'calendar': rec.data[Ext.ensible.cal.EventMappings.CalendarId.name]
+            });
+        }
+        if(this.contactStore){
+            this.form.setValues({
+                'contact': rec.data[Ext.ensible.cal.EventMappings.ContactId.name]
+            });
         }
         
         //this.isAdd = !!rec.data[Ext.ensible.cal.EventMappings.IsNew.name];
@@ -244,10 +282,10 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
     // inherited docs
     updateRecord: function(){
         var dates = this.dateRangeField.getValue(),
-            M = Ext.ensible.cal.EventMappings,
-            rec = this.activeRecord,
-            fs = rec.fields,
-            dirty = false;
+        M = Ext.ensible.cal.EventMappings,
+        rec = this.activeRecord,
+        fs = rec.fields,
+        dirty = false;
                         
         rec.beginEdit();
         
@@ -262,7 +300,7 @@ Ext.ensible.cal.EventEditForm = Ext.extend(Ext.form.FormPanel, {
             var field = this.form.findField(f.name);
             if(field){
                 var value = field.getValue();
-                if (value.getGroupValue) {
+                if (value != null && value.getGroupValue) {
                     value = value.getGroupValue();
                 } 
                 else if (field.eachItem) {
